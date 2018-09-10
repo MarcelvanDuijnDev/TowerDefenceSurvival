@@ -5,17 +5,19 @@ using UnityEngine.UI;
 
 public class MusicHandler : MonoBehaviour 
 {
-    public AudioClip[] m_AudioClips;
-    public AudioSource m_AudioSource;
-    public Image m_BGImage;
-    public Text m_MusicTitle;
+    [SerializeField]private AudioClip[] m_AudioClips;
+    [SerializeField]private AudioSource m_AudioSource;
+    [SerializeField]private Image m_BGImage;
+    [SerializeField]private Text m_MusicTitle;
 
-    public bool m_Shuffle;
+    [Header("Options")]
+    [SerializeField]private bool m_Off;
+    [SerializeField]private bool m_Shuffle;
+    [SerializeField]private float m_InfoTime;
 
     int m_CurrentClip;
 
     bool m_NewClip;
-    public float m_InfoTime;
     float m_InfoTimeC;
 
     Color m_ImgColor;
@@ -23,24 +25,27 @@ public class MusicHandler : MonoBehaviour
 
     void Start()
     {
-        if (m_Shuffle)
+        if (!m_Off)
         {
-            m_CurrentClip = Random.Range(0, m_AudioClips.Length);
-            StartClip(m_CurrentClip);
+            if (m_Shuffle)
+            {
+                m_CurrentClip = Random.Range(0, m_AudioClips.Length);
+                StartClip(m_CurrentClip);
+            }
+            else
+            {
+                StartClip(0);
+            }
+            m_ImgColor = m_BGImage.color;
+            m_TextColor = m_MusicTitle.color;
+            m_InfoTimeC = m_InfoTime;
+            m_NewClip = true;
         }
-        else
-        {
-            StartClip(0);
-        }
-        m_ImgColor = m_BGImage.color;
-        m_TextColor = m_MusicTitle.color;
-        m_InfoTimeC = m_InfoTime;
-        m_NewClip = true;
     }
 	
 	void Update () 
     {
-        if (!m_AudioSource.isPlaying)
+        if (!m_AudioSource.isPlaying && !m_Off)
         {
             if (m_CurrentClip != m_AudioClips.Length - 2)
             {
