@@ -8974,7 +8974,7 @@ MonoBehaviour:
   m_AudioSource: {fileID: 104584222}
   m_BGImage: {fileID: 1995490981}
   m_MusicTitle: {fileID: 1341313049}
-  m_Off: 0
+  m_Off: 1
   m_Shuffle: 1
   m_InfoTime: 3
 --- !u!1 &1758798686
