@@ -5,11 +5,13 @@ using UnityEngine.UI;
 
 public class PlaceObject : MonoBehaviour 
 {
+    [Header("Settings")]
     public GameObject m_PrefabObj;
     public GameObject m_PrefabObjBluePrint;
     public GameObject m_ShootPos;
     [SerializeField]private GameObject m_RotationObj;
     [SerializeField]private Text m_InfoText;
+    [SerializeField]private float m_Range_Turret,m_Range_Miners;
 
     Vector3 rot;
     InventorySlots m_SlotsScript;
@@ -38,7 +40,7 @@ public class PlaceObject : MonoBehaviour
         if (m_PrefabObj != null)
         {
             //Miners
-            if (Physics.Raycast(m_ShootPos.transform.position, m_ShootPos.transform.TransformDirection(rot), out hit, 5))
+            if (Physics.Raycast(m_ShootPos.transform.position, m_ShootPos.transform.TransformDirection(rot), out hit, m_Range_Miners))
             {
                 Debug.DrawRay(m_ShootPos.transform.position, m_ShootPos.transform.TransformDirection(rot) * hit.distance, Color.black);
                 if (m_SlotsScript.m_InventorySlotObj[m_SlotsScript.m_CurrentSlot].tag == "Machine")
@@ -63,7 +65,7 @@ public class PlaceObject : MonoBehaviour
                 }
             }
             //Turrets
-            if (Physics.Raycast(m_ShootPos.transform.position, m_ShootPos.transform.TransformDirection(rot), out hit, 10))
+            if (Physics.Raycast(m_ShootPos.transform.position, m_ShootPos.transform.TransformDirection(rot), out hit, m_Range_Turret))
             {
                 if (m_SlotsScript.m_InventorySlotObj[m_SlotsScript.m_CurrentSlot].tag == "Turret")
                 {
@@ -88,7 +90,7 @@ public class PlaceObject : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 //Miners
-                if (Physics.Raycast(m_ShootPos.transform.position, m_ShootPos.transform.TransformDirection(rot), out hit, 5))
+                if (Physics.Raycast(m_ShootPos.transform.position, m_ShootPos.transform.TransformDirection(rot), out hit, m_Range_Miners))
                 {
                     if (m_SlotsScript.m_InventorySlotObj[m_SlotsScript.m_CurrentSlot].tag == "Machine")
                     {
@@ -112,7 +114,7 @@ public class PlaceObject : MonoBehaviour
                     }
                 }
                 //Turret
-                if (Physics.Raycast(m_ShootPos.transform.position, m_ShootPos.transform.TransformDirection(rot), out hit, 10))
+                if (Physics.Raycast(m_ShootPos.transform.position, m_ShootPos.transform.TransformDirection(rot), out hit, m_Range_Turret))
                 {
                     if (m_SlotsScript.m_InventorySlotObj[m_SlotsScript.m_CurrentSlot].tag == "Turret")
                     {
