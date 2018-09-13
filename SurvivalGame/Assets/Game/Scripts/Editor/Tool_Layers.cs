@@ -4,10 +4,10 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 
-public class EditorLayers : EditorWindow 
+public class Tool_Layers : EditorWindow 
 {
-    public Layer[] layers = new Layer[0];
-    private Layer[] backupLayers;
+    public Tool_LayerOptions[] layers = new Tool_LayerOptions[0];
+    private Tool_LayerOptions[] backupLayers;
     private GameObject[] selectedGameObjects;
 
 	void Update () 
@@ -58,7 +58,7 @@ public class EditorLayers : EditorWindow
     public void RemoveLayer(int index)
     {
         backupLayers = layers;
-        layers = new Layer[backupLayers.Length - 1];
+        layers = new Tool_LayerOptions[backupLayers.Length - 1];
         int o = 0;
         for (int i = 0; i < backupLayers.Length - 1; i++)
         {
@@ -74,10 +74,10 @@ public class EditorLayers : EditorWindow
         }
     }
 
-    [MenuItem("Window/Layers")]
+    [MenuItem("Tools/Layers")]
     static void Init()
     {
-        EditorLayers window = (EditorLayers)EditorWindow.GetWindow(typeof(EditorLayers));
+        Tool_Layers window = (Tool_Layers)EditorWindow.GetWindow(typeof(Tool_Layers));
         window.Show();
     }
 
@@ -89,7 +89,7 @@ public class EditorLayers : EditorWindow
         if (GUILayout.Button("Add Layer"))
         {
             backupLayers = layers;
-            layers = new Layer[backupLayers.Length + 1];
+            layers = new Tool_LayerOptions[backupLayers.Length + 1];
             for (int i = 0; i < layers.Length; i++)
             {
                 if (i != layers.Length - 1)
@@ -106,7 +106,7 @@ public class EditorLayers : EditorWindow
         if (GUILayout.Button("Remove Layer"))
         {
             backupLayers = layers;
-            layers = new Layer[layers.Length - 1];
+            layers = new Tool_LayerOptions[layers.Length - 1];
             for (int i = 0; i < backupLayers.Length - 1; i++)
             {
                 layers[i] = backupLayers[i];
@@ -147,7 +147,7 @@ public class EditorLayers : EditorWindow
     }
 }
     
-public struct Layer
+public struct Tool_LayerOptions
 {
     public string layerName;
     public bool active;

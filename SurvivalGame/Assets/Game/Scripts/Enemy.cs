@@ -29,7 +29,7 @@ public class Enemy : MonoBehaviour
 
         if (m_Health <= 0)
         {
-            Destroy(this.gameObject);
+            this.gameObject.SetActive(false);
         }
 	}
 
