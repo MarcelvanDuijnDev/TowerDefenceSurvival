@@ -10,8 +10,10 @@ using System.IO;
 public class Tool_Scripts : EditorWindow 
 {
     private string filePath = "Assets";
+	private bool codeExamples = false;
     private bool quickStart = true;
     private string searchScript = "";
+	private string searchCode = "";
     private string searchScriptTag = "";
     private string textField = "";
 
@@ -24,6 +26,7 @@ public class Tool_Scripts : EditorWindow
     //Both
     private string gameType = "";
     private string settings = "";
+	private List<int> scriptsNeeded = new List<int>();
 
     private string sceneOptions = "";
 
@@ -39,8 +42,8 @@ public class Tool_Scripts : EditorWindow
     };
     public string[] scriptCode = new string[]
     {
-        "",
-        "",
+        "using System.Collections;\nusing System.Collections.Generic;\nusing UnityEngine;\n\npublic class Movement_Fps : MonoBehaviour {\n\n    //Movement\n    [SerializeField]private float normalSpeed, sprintSpeed;\n    [SerializeField]private float jumpSpeed;\n    [SerializeField]private float gravity;\n    private Vector3 moveDirection = Vector3.zero;\n    //Look around\n    public float cameraSensitivity;\n    [SerializeField]private Transform head;\n    private float rotationX = 0.0f;\n    private float rotationY = 0.0f;\n    private float speed;\n    private float dpadHorizontal, dpadVertical;\n\n    void Start()\n    {\n        Cursor.lockState = CursorLockMode.Locked;\n    }\n\n    void Update() \n    {\n\n        //Look around\n        rotationX += Input.GetAxis(\"Mouse X\") * cameraSensitivity * Time.deltaTime;\n        rotationY += Input.GetAxis(\"Mouse Y\") * cameraSensitivity * Time.deltaTime;\n        rotationY = Mathf.Clamp (rotationY, -90, 90);\n\n        transform.localRotation = Quaternion.AngleAxis(rotationX, Vector3.up);\n        head.transform.localRotation = Quaternion.AngleAxis(rotationY, Vector3.left);\n\n        //Movement\n        CharacterController controller = GetComponent<CharacterController>();\n        if (controller.isGrounded) {\n            moveDirection = new Vector3(Input.GetAxis(\"Horizontal\"), 0, Input.GetAxis(\"Vertical\"));\n            moveDirection = transform.TransformDirection(moveDirection);\n            moveDirection *= speed;\n            if (Input.GetButton(\"Jump\"))\n                moveDirection.y = jumpSpeed;\n        }\n        moveDirection.y -= gravity * Time.deltaTime;\n        controller.Move(moveDirection * Time.deltaTime);\n\n\n        //Sprint\n        if(Input.GetKey(KeyCode.LeftShift))\n        {\n            speed = sprintSpeed;\n        }\n        else\n        {\n            speed = normalSpeed;\n        }\n    }\n}\n",
+		"",
         "",
         "",
         "",
@@ -56,64 +59,108 @@ public class Tool_Scripts : EditorWindow
         "2D",
         "Other"
     };
-    #endregion
+	#endregion
+	#region Code Examples
+	public string[] codeExampleName = new string[]
+    {
+        "for",
+        "switch",
+        "ontriggerenter",
+    };
+    public string[] codeExampleCode = new string[]
+    {
+        "for (int i = 0; i < length; i++)\n            {\n\n            }",
+		"",
+        ""
 
-    [MenuItem("Tools/Scripts")]
+    };
+	#endregion
+
+	[MenuItem("Tools/Scripts")]
     static void Init()
     {
         Tool_Scripts window = (Tool_Scripts)EditorWindow.GetWindow(typeof(Tool_Scripts));
         window.Show();
     }
 
-    void OnGUI()
-    {
-        if (!quickStart && options3DStep == 0 && options2DStep == 0)
-        {
-            GUILayout.Label("Scripts", EditorStyles.boldLabel);
-            GUILayout.BeginHorizontal("Box");
-            searchScript = EditorGUILayout.TextField("Search: ", searchScript);
-            searchScriptTag = EditorGUILayout.TextField("SearchTag: ", searchScriptTag);
-            GUILayout.EndHorizontal();
-            GUILayout.BeginVertical("Box");
+	void OnGUI()
+	{
+		if (!quickStart && options3DStep == 0 && options2DStep == 0)
+		{
+			GUILayout.BeginHorizontal("Box");
+			if (GUILayout.Button("Scripts"))
+			{
+				codeExamples = false;
+			}
+			if (GUILayout.Button("Code Examples"))
+			{
+				codeExamples = true;
+			}
+			GUILayout.EndHorizontal();
 
-            for (int i = 0; i < scriptName.Length; i++)
-            {
-                if (searchScript == "" || scriptName[i].ToLower().Contains(searchScript.ToLower()))
-                {
-                    if (scriptTags[i].ToLower().Contains(searchScriptTag.ToLower()) || scriptTags[i] == "" || scriptTags[i] == null)
-                    {
-                        GUILayout.BeginHorizontal("Box");
-                        GUILayout.Label(scriptName[i], EditorStyles.boldLabel);
-                        if (GUILayout.Button("Add"))
-                        {
-                            string sn = scriptName[i];
-                            /*
-                            AssetDatabase.CreateAsset(sn, "Assets/test.cs");
-                            Add script
-                            */
-                        }
-                        if (GUILayout.Button("Copy"))
-                        {
-                            EditorGUIUtility.systemCopyBuffer = scriptCode[i];
-                        }
-                        if (GUILayout.Button("Show"))
-                        {
-                            textField = scriptCode[i];
-                        }
-                        GUILayout.EndHorizontal();
+			GUILayout.Label("Scripts", EditorStyles.boldLabel);
+			GUILayout.BeginHorizontal("Box");
+			if (!codeExamples)
+			{
+				searchScript = EditorGUILayout.TextField("Search: ", searchScript);
+				searchScriptTag = EditorGUILayout.TextField("SearchTag: ", searchScriptTag);
+			}
+			else
+			{
+				searchCode = EditorGUILayout.TextField("Search: ", searchCode);
+			}
+			GUILayout.EndHorizontal();
+			GUILayout.BeginVertical("Box");
 
-                        /*
-                        GUILayout.BeginScrollView(new Vector2(3,150), GUILayout.Width(position.width), GUILayout.Height(position.height - 100));
-                        GUILayout.BeginHorizontal("Box");
-                        //textField = EditorGUI.TextArea(new Vector2(0,0), textField);
-                        GUILayout.EndHorizontal();
-                        GUILayout.EndScrollView();
-                        */
-                    }
-                }
-            }
-            GUILayout.EndVertical();
-        }
+			if (!codeExamples)
+			{
+				for (int i = 0; i < scriptName.Length; i++)
+				{
+					if (searchScript == "" || scriptName[i].ToLower().Contains(searchScript.ToLower()))
+					{
+						if (scriptTags[i].ToLower().Contains(searchScriptTag.ToLower()) || scriptTags[i] == "" || scriptTags[i] == null)
+						{
+							GUILayout.BeginHorizontal("Box");
+							GUILayout.Label(scriptName[i], EditorStyles.boldLabel);
+							if (GUILayout.Button("Add"))
+							{
+								AddScripts(scriptName[i], scriptCode[i]);
+							}
+							if (GUILayout.Button("Copy"))
+							{
+								EditorGUIUtility.systemCopyBuffer = scriptCode[i];
+							}
+							if (GUILayout.Button("Show"))
+							{
+								textField = scriptCode[i];
+							}
+							GUILayout.EndHorizontal();
+						}
+					}
+				}
+			}
+			else
+			{
+				for (int i = 0; i < codeExampleName.Length; i++)
+				{
+					if (searchCode == "" || codeExampleName[i].ToLower().Contains(searchCode.ToLower()))
+					{
+						GUILayout.BeginHorizontal("Box");
+						GUILayout.Label(codeExampleName[i], EditorStyles.boldLabel);
+						if (GUILayout.Button("Copy"))
+						{
+							EditorGUIUtility.systemCopyBuffer = codeExampleCode[i];
+						}
+						if (GUILayout.Button("Show"))
+						{
+							textField = codeExampleCode[i];
+						}
+						GUILayout.EndHorizontal();
+					}
+				}
+			}
+			GUILayout.EndVertical();
+		}
         else
         {
             GUILayout.Label("Quick Start", EditorStyles.boldLabel);
@@ -180,6 +227,10 @@ public class Tool_Scripts : EditorWindow
             }
             if (options3DStep == 3)
             {
+				for (int i = 0; i < max; i++)
+				{
+					
+				}
                 GUILayout.Label(settings, EditorStyles.boldLabel);
                 if (GUILayout.Button("Confirm", GUILayout.Height(position.height * 0.3f)))
                 {
@@ -208,7 +259,7 @@ public class Tool_Scripts : EditorWindow
         if(gameType.Contains("NewScene"))
         {
             Scene newScene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
-            AddScripts();
+            //AddScripts();
             CreateBasic3DScene();
             //add script
             //add objects
@@ -241,11 +292,9 @@ public class Tool_Scripts : EditorWindow
         quickStart = false;
     }
 
-    void AddScripts()
+    void AddScripts(string newScriptName, string contents)
     {
-        string newScriptName = "TestScript";
-        string contents = "GameObject cameraObject";
-        using (StreamWriter sw = new StreamWriter(string.Format(Application.dataPath + "/testScript.cs",
+		using (StreamWriter sw = new StreamWriter(string.Format(Application.dataPath + "/" + newScriptName + ".cs",
                                                    new object[] { newScriptName.Replace(" ", "") })))
         {
             sw.Write(contents);
@@ -262,13 +311,12 @@ public class Tool_Scripts : EditorWindow
         player.name = "Player";
         player.transform.position = new Vector3(0,2,0);
         player.AddComponent<CharacterController>();
-        player.AddComponent<Rigidbody>();
 
         GameObject cameraObj = GameObject.Find("Main Camera");
         cameraObj.transform.parent = player.transform;
         cameraObj.transform.localPosition = new Vector3(0, 0.65f, 0);
 
-        player.AddComponent<TestScript>().cameraObject = cameraObj;
+        //player.AddComponent<TestScript>().cameraObject = cameraObj;
     }
 }
 
