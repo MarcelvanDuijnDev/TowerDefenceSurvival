@@ -38,7 +38,7 @@ public class Tool_Scripts : EditorWindow
         "Movement_Platformer",
         "Movement_TopDown3D",
         "Movement_TopDown2D",
-        "OtherScript"
+        "Free_Cam"
     };
     public string[] scriptCode = new string[]
     {
@@ -66,13 +66,16 @@ public class Tool_Scripts : EditorWindow
         "for",
         "switch",
         "ontriggerenter",
+        "",
+        "",
     };
     public string[] codeExampleCode = new string[]
     {
         "for (int i = 0; i < length; i++)\n            {\n\n            }",
 		"",
-        ""
-
+        "",
+        "",
+        "",
     };
 	#endregion
 
@@ -227,10 +230,6 @@ public class Tool_Scripts : EditorWindow
             }
             if (options3DStep == 3)
             {
-				for (int i = 0; i < max; i++)
-				{
-					
-				}
                 GUILayout.Label(settings, EditorStyles.boldLabel);
                 if (GUILayout.Button("Confirm", GUILayout.Height(position.height * 0.3f)))
                 {
