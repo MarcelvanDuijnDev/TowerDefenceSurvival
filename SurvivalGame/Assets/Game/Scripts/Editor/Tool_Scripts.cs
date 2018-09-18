@@ -38,7 +38,8 @@ public class Tool_Scripts : EditorWindow
         "Movement_Platformer",
         "Movement_TopDown3D",
         "Movement_TopDown2D",
-        "Free_Cam"
+        "Free_Cam",
+        "ObjectPool"
     };
     public string[] scriptCode = new string[]
     {
@@ -48,7 +49,7 @@ public class Tool_Scripts : EditorWindow
         "",
         "",
         "",
-
+        ""
     };
     public string[] scriptTags = new string[]
     {
@@ -57,7 +58,8 @@ public class Tool_Scripts : EditorWindow
         "3D",
         "3D",
         "2D",
-        "Other"
+        "Other",
+        "3D"
     };
 	#endregion
 	#region Code Examples
@@ -102,7 +104,7 @@ public class Tool_Scripts : EditorWindow
 			GUILayout.EndHorizontal();
 
 			GUILayout.Label("Scripts", EditorStyles.boldLabel);
-			GUILayout.BeginHorizontal("Box");
+			GUILayout.BeginVertical("Box");
 			if (!codeExamples)
 			{
 				searchScript = EditorGUILayout.TextField("Search: ", searchScript);
@@ -112,7 +114,7 @@ public class Tool_Scripts : EditorWindow
 			{
 				searchCode = EditorGUILayout.TextField("Search: ", searchCode);
 			}
-			GUILayout.EndHorizontal();
+			GUILayout.EndVertical();
 			GUILayout.BeginVertical("Box");
 
 			if (!codeExamples)
