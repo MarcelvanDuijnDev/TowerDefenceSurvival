@@ -17,9 +17,12 @@ public class CharacterControllerScript : MonoBehaviour {
     private float speed;
     private float dpadHorizontal, dpadVertical;
 
+    CharacterController controller;
+
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        controller = GetComponent<CharacterController>();
     }
 
     void Update() 
@@ -34,7 +37,6 @@ public class CharacterControllerScript : MonoBehaviour {
         head.transform.localRotation = Quaternion.AngleAxis(rotationY, Vector3.left);
 
         //Movement
-        CharacterController controller = GetComponent<CharacterController>();
         if (controller.isGrounded) {
             moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
             moveDirection = transform.TransformDirection(moveDirection);

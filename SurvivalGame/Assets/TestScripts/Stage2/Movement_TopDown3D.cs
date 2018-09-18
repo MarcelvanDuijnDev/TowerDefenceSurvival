@@ -9,7 +9,7 @@ public class Movement_TopDown3D : MonoBehaviour
     [SerializeField] private Vector3 m_OffSet;
     [SerializeField] private bool m_LookTowardsPlayer;
     [Header("Player")]
-    [SerializeField] private float m_MovementSpeed;
+    [SerializeField] private float m_NormalSpeed;
     [SerializeField] private float m_SprintSpeed;
 
     private Rigidbody m_rb;
@@ -26,7 +26,7 @@ public class Movement_TopDown3D : MonoBehaviour
     {
         //Movement
         Vector3 moveInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
-        if (Input.GetKey(KeyCode.LeftShift)) { m_Speed = m_SprintSpeed; } else { m_Speed = m_MovementSpeed; }
+        if (Input.GetKey(KeyCode.LeftShift)) { m_Speed = m_SprintSpeed; } else { m_Speed = m_NormalSpeed; }
         m_rb.velocity = moveInput * m_Speed;
 
         //Camera

@@ -27,6 +27,7 @@ public class Tool_Scripts : EditorWindow
     private string gameType = "";
     private string settings = "";
     private List<int> scriptsNeeded = new List<int>();
+    private bool[] scriptArray;
 
     private string sceneOptions = "";
 
@@ -40,29 +41,35 @@ public class Tool_Scripts : EditorWindow
         "Movement_TopDown2D",
         "Movement_TopDown3D",
         "Free_Cam",
-        "ObjectPool"
+        "ObjectPool",
+        "Rotation",
+        "Menu"
     };
     public string[] scriptCode = new string[]
     {
-        "using System.Collections;\nusing System.Collections.Generic;\nusing UnityEngine;\n\npublic class Movement_Fps : MonoBehaviour {\n\n    //Movement\n    [SerializeField]private float normalSpeed, sprintSpeed;\n    [SerializeField]private float jumpSpeed;\n    [SerializeField]private float gravity;\n    private Vector3 moveDirection = Vector3.zero;\n    //Look around\n    public float cameraSensitivity;\n    [SerializeField]private Transform head;\n    private float rotationX = 0.0f;\n    private float rotationY = 0.0f;\n    private float speed;\n    private float dpadHorizontal, dpadVertical;\n\n    void Start()\n    {\n        Cursor.lockState = CursorLockMode.Locked;\n    }\n\n    void Update() \n    {\n\n        //Look around\n        rotationX += Input.GetAxis(\"Mouse X\") * cameraSensitivity * Time.deltaTime;\n        rotationY += Input.GetAxis(\"Mouse Y\") * cameraSensitivity * Time.deltaTime;\n        rotationY = Mathf.Clamp (rotationY, -90, 90);\n\n        transform.localRotation = Quaternion.AngleAxis(rotationX, Vector3.up);\n        head.transform.localRotation = Quaternion.AngleAxis(rotationY, Vector3.left);\n\n        //Movement\n        CharacterController controller = GetComponent<CharacterController>();\n        if (controller.isGrounded) {\n            moveDirection = new Vector3(Input.GetAxis(\"Horizontal\"), 0, Input.GetAxis(\"Vertical\"));\n            moveDirection = transform.TransformDirection(moveDirection);\n            moveDirection *= speed;\n            if (Input.GetButton(\"Jump\"))\n                moveDirection.y = jumpSpeed;\n        }\n        moveDirection.y -= gravity * Time.deltaTime;\n        controller.Move(moveDirection * Time.deltaTime);\n\n\n        //Sprint\n        if(Input.GetKey(KeyCode.LeftShift))\n        {\n            speed = sprintSpeed;\n        }\n        else\n        {\n            speed = normalSpeed;\n        }\n    }\n}\n",
-        "using System.Collections;\nusing System.Collections.Generic;\nusing UnityEngine;\n\npublic class Movement_ThirdPerson : MonoBehaviour\n{\n    [Header(\"Player\")]\n    [SerializeField] private float m_MovementSpeed;\n    [SerializeField] private float m_SprintSpeed;\n    [SerializeField] private float m_MouseSensitivity;\n\n    [Header(\"Camera\")]\n    [SerializeField] private GameObject m_RotationPoint;\n\n    private Rigidbody m_rb;\n    private GameObject m_Player;\n    private float m_Speed;\n\n    //Rotation\n    private float rotationX = 0.0f;\n    private float rotationY = 0.0f;\n\n    void Start()\n    {\n        m_rb = GetComponent<Rigidbody>();\n        m_Player = this.gameObject;\n    }\n\n    void Update()\n    {\n        //Movement\n        Vector3 moveInput = new Vector3(Input.GetAxisRaw(\"Horizontal\"), 0f, Input.GetAxisRaw(\"Vertical\"));\n        if (Input.GetKey(KeyCode.LeftShift)) { m_Speed = m_SprintSpeed; } else { m_Speed = m_MovementSpeed; }\n        m_rb.velocity = moveInput * m_Speed;\n\n        //Player Rotation\n        rotationX += Input.GetAxis(\"Mouse X\") * m_MouseSensitivity * Time.deltaTime;\n        rotationY += Input.GetAxis(\"Mouse Y\") * m_MouseSensitivity * Time.deltaTime;\n        rotationY = Mathf.Clamp(rotationY, -90, 90);\n\n        transform.localRotation = Quaternion.AngleAxis(rotationX, Vector3.up);\n        m_RotationPoint.transform.localRotation = Quaternion.AngleAxis(rotationY, Vector3.left);\n    }\n}\n",
         "",
         "",
         "",
-        "using System.Collections;\nusing System.Collections.Generic;\nusing UnityEngine;\n\npublic class Movement_TopDown3D : MonoBehaviour\n{\n    [Header(\"Camera\")]\n    [SerializeField] private Camera m_Camera;\n    [SerializeField] private Vector3 m_OffSet;\n    [SerializeField] private bool m_LookTowardsPlayer;\n    [Header(\"Player\")]\n    [SerializeField] private float m_MovementSpeed;\n    [SerializeField] private float m_SprintSpeed;\n\n    private Rigidbody m_rb;\n    private GameObject m_Player;\n    private float m_Speed;\n\n    void Start () \n    {\n        m_rb = GetComponent<Rigidbody>();\n        m_Player = this.gameObject;\n    }\n\t\n\tvoid Update ()\n    {\n        //Movement\n        Vector3 moveInput = new Vector3(Input.GetAxisRaw(\"Horizontal\"), 0f, Input.GetAxisRaw(\"Vertical\"));\n        if (Input.GetKey(KeyCode.LeftShift)) { m_Speed = m_SprintSpeed; } else { m_Speed = m_MovementSpeed; }\n        m_rb.velocity = moveInput * m_Speed;\n\n        //Camera\n        m_Camera.transform.position = new Vector3(m_Player.transform.position.x + m_OffSet.x, m_Player.transform.position.y + m_OffSet.y, m_Player.transform.position.z + m_OffSet.z);\n        if(m_LookTowardsPlayer)\n        {\n            m_Camera.transform.LookAt(m_Player.transform);\n        }\n\n        //Player Rotation\n        Ray cameraRay = m_Camera.ScreenPointToRay(Input.mousePosition);\n        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);\n        float rayLength;\n        if (groundPlane.Raycast(cameraRay, out rayLength))\n        {\n            Vector3 pointToLook = cameraRay.GetPoint(rayLength);\n            transform.LookAt(new Vector3(pointToLook.x, transform.position.y, pointToLook.z));\n        }\n    }\n}\n",
-        "using System.Collections;\nusing System.Collections.Generic;\nusing UnityEngine;\n\npublic class FreeCam : MonoBehaviour\n{\n    [Header(\"Settings\")]\n    [SerializeField] private float m_MouseSensitivity;\n    [SerializeField] private float m_CameraSpeed;\n    [SerializeField] private float m_ShiftSpeed;\n\n    private float rotationX, rotationY, m_Speed;\n\t\n\tvoid Update ()\n    {\n        Vector3 moveInput = new Vector3(Input.GetAxisRaw(\"Horizontal\"), 0f, Input.GetAxisRaw(\"Vertical\"));\n        if (Input.GetKey(KeyCode.LeftShift)) { m_Speed = m_ShiftSpeed; } else { m_Speed = m_CameraSpeed; }\n        transform.Translate(moveInput * m_Speed * Time.deltaTime);\n\n        rotationX += Input.GetAxis(\"Mouse X\") * m_MouseSensitivity * Time.deltaTime;\n        rotationY += Input.GetAxis(\"Mouse Y\") * m_MouseSensitivity * Time.deltaTime;\n\n        transform.eulerAngles = new Vector3(-rotationY, rotationX, 0);\n    }\n}\n",
-		"using System.Collections;\nusing System.Collections.Generic;\nusing UnityEngine;\n\npublic class ObjectPool : MonoBehaviour\n{\n    [Header(\"Amount\")]\n    public int pooledAmount;\n\n    [Header(\"Object\")]\n    public GameObject prefabObj;\n\n    [HideInInspector]public List<GameObject> objects;\n\n    void Start()\n    {\n        for (int i = 0; i < pooledAmount; i++)\n        {\n            GameObject obj = (GameObject)Instantiate(prefabObj);\n            obj.transform.parent = gameObject.transform;\n            obj.SetActive(false);\n            objects.Add(obj);\n        }\n    }\n}\n"
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
     };
     public string[] scriptTags = new string[]
     {
-        "3D",
-        "3D",
-        "3D",
-        "3D",
-		"3D",
-        "2D",
-        "Other",
-        "3D"
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
     };
     #endregion
     #region Code Examples
@@ -179,7 +186,7 @@ public class Tool_Scripts : EditorWindow
             GUILayout.BeginVertical("Box");
             if (options2DStep == 0 && options3DStep == 0)
             {
-                if (GUILayout.Button("Advanced", GUILayout.Height(position.height * 0.29f)))
+                if (GUILayout.Button("Scripts", GUILayout.Height(position.height * 0.29f)))
                 {
                     quickStart = false;
                 }
@@ -202,37 +209,44 @@ public class Tool_Scripts : EditorWindow
                     gameType = "FPS";
                     settings += "Type: First Person Shooter \n";
                     options3DStep = 2;
+                    scriptArray = new bool[1];
                 }
                 if (GUILayout.Button("Third Person", GUILayout.Height(position.height * 0.29f)))
                 {
                     gameType = "ThirdPerson";
                     settings += "Type: ThirdPerson \n";
                     options3DStep = 2;
+                    scriptArray = new bool[1];
                 }
                 if (GUILayout.Button("Top Down", GUILayout.Height(position.height * 0.29f)))
                 {
                     gameType = "TopDown";
                     settings += "Type: Top Down \n";
                     options3DStep = 2;
+                    scriptArray = new bool[1];
+                }
+                for (int i = 0; i < scriptArray.Length; i++)
+                {
+                    scriptArray[i] = true;
                 }
             }
             if (options3DStep == 2)
             {
                 if (GUILayout.Button("Create: scene, objects and scripts", GUILayout.Height(position.height * 0.29f)))
                 {
-                    gameType += " NewScene";
+                    gameType += " NewScene + Scripts";
                     settings += "Options: Create: scene, objects and scripts \n";
                     options3DStep = 3;
                 }
                 if (GUILayout.Button("Create: objects with scripts", GUILayout.Height(position.height * 0.29f)))
                 {
-                    gameType += " AddObjWithScript";
+                    gameType += " AddObjWithScriptS";
                     settings += "Type: Create: objects with scripts \n";
                     options3DStep = 3;
                 }
                 if (GUILayout.Button("Create: scripts", GUILayout.Height(position.height * 0.29f)))
                 {
-                    gameType += " AddScript";
+                    gameType += " AddScriptS";
                     settings += "Type: Create: scripts \n";
                     options3DStep = 3;
                 }
@@ -240,6 +254,7 @@ public class Tool_Scripts : EditorWindow
             if (options3DStep == 3)
             {
                 GUILayout.Label(settings, EditorStyles.boldLabel);
+                //Select Scripts
                 if (GUILayout.Button("Confirm", GUILayout.Height(position.height * 0.3f)))
                 {
                     Set3DSettings1();
@@ -268,8 +283,8 @@ public class Tool_Scripts : EditorWindow
         {
             Scene newScene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
             //AddScripts();
-            CreateBasic3DScene();
-            //add script
+            CreateBasic3DScene(gameType);
+            CreateScripts(gameType);
             //add objects
 
         }
@@ -308,12 +323,12 @@ public class Tool_Scripts : EditorWindow
             sw.Write(contents);
         }
     }
-    void CreateBasic3DScene()
+
+    void CreateBasic3DScene(string type)
     {
         GameObject groundCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         groundCube.name = "Ground";
         groundCube.transform.position = new Vector3(0, 0, 0);
-        groundCube.transform.localScale = new Vector3(25, 1, 25);
 
         GameObject player = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         player.name = "Player";
@@ -321,10 +336,48 @@ public class Tool_Scripts : EditorWindow
         player.AddComponent<CharacterController>();
 
         GameObject cameraObj = GameObject.Find("Main Camera");
-        cameraObj.transform.parent = player.transform;
-        cameraObj.transform.localPosition = new Vector3(0, 0.65f, 0);
 
-        //player.AddComponent<TestScript>().cameraObject = cameraObj;
+        if (type.Contains("TopDown") || type.Contains("FPS") || type.Contains("ThirdPerson"))
+        {
+            groundCube.transform.localScale = new Vector3(25, 1, 25);
+            if (type.Contains("FPS"))
+            {
+                cameraObj.transform.parent = player.transform;
+                cameraObj.transform.localPosition = new Vector3(0, 0.65f, 0);
+            }
+            if (type.Contains("ThirdPerson"))
+            {
+                GameObject rotationPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                rotationPoint.name = "rotationPoint";
+                rotationPoint.transform.position = new Vector3(0, 2, 0);
+                cameraObj.transform.parent = rotationPoint.transform;
+                cameraObj.transform.localPosition = new Vector3(1, 0.65f, -1.5f);
+                rotationPoint.transform.parent = player.transform;
+            }
+        }
+        else
+        {
+            groundCube.transform.localScale = new Vector3(25, 1, 1);
+        }
+    }
+    void CreateScripts(string type)
+    {
+        if (type.Contains("FPS"))
+        {
+            AddScripts(scriptName[0], scriptCode[0]);
+        }
+        if (type.Contains("TopDown"))
+        {
+            AddScripts(scriptName[4], scriptCode[4]);
+        }
+        if (type.Contains("ThirdPerson"))
+        {
+            AddScripts(scriptName[1], scriptCode[1]);
+        }
+        if (type.Contains("PlatFormer3D"))
+        {
+            AddScripts(scriptName[3], scriptCode[3]);
+        }
     }
 }
 

@@ -1,23 +1,22 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Movement_ThirdPerson : MonoBehaviour
-{
+public class Movement_Fps : MonoBehaviour {
+
     [Header("Player")]
     [SerializeField] private float m_NormalSpeed;
     [SerializeField] private float m_SprintSpeed;
-    [SerializeField] private float m_MouseSensitivity;
     [SerializeField] private float m_JumpSpeed;
     [SerializeField] private float m_Gravity;
 
     [Header("Camera")]
-    [SerializeField] private GameObject m_RotationPoint;
+    [SerializeField] private Transform head;
+    [SerializeField] private float cameraSensitivity;
 
     private CharacterController m_CC;
-    private GameObject m_Player;
-    private float m_Speed;
     private Vector3 m_MoveDirection;
+    private float m_Speed;
 
     //Rotation
     private float m_RotationX = 0.0f;
@@ -27,11 +26,18 @@ public class Movement_ThirdPerson : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         m_CC = GetComponent<CharacterController>();
-        m_Player = this.gameObject;
     }
 
-    void Update()
+    void Update() 
     {
+        //Rotation
+        m_RotationX += Input.GetAxis("Mouse X") * cameraSensitivity * Time.deltaTime;
+        m_RotationY += Input.GetAxis("Mouse Y") * cameraSensitivity * Time.deltaTime;
+        m_RotationY = Mathf.Clamp (m_RotationY, -90, 90);
+
+        transform.localRotation = Quaternion.AngleAxis(m_RotationX, Vector3.up);
+        head.transform.localRotation = Quaternion.AngleAxis(m_RotationY, Vector3.left);
+
         //Movement
         if (m_CC.isGrounded)
         {
@@ -53,13 +59,5 @@ public class Movement_ThirdPerson : MonoBehaviour
         {
             m_Speed = m_NormalSpeed;
         }
-
-        //Player Rotation
-        m_RotationX += Input.GetAxis("Mouse X") * m_MouseSensitivity * Time.deltaTime;
-        m_RotationY += Input.GetAxis("Mouse Y") * m_MouseSensitivity * Time.deltaTime;
-        m_RotationY = Mathf.Clamp(m_RotationY, -90, 90);
-
-        transform.localRotation = Quaternion.AngleAxis(m_RotationX, Vector3.up);
-        m_RotationPoint.transform.localRotation = Quaternion.AngleAxis(m_RotationY, Vector3.left);
     }
 }

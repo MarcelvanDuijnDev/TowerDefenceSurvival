@@ -2,40 +2,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Movement_ThirdPerson : MonoBehaviour
+public class Movement_Platformer3D : MonoBehaviour
 {
-    [Header("Player")]
+    [Header("player")]
     [SerializeField] private float m_NormalSpeed;
     [SerializeField] private float m_SprintSpeed;
-    [SerializeField] private float m_MouseSensitivity;
     [SerializeField] private float m_JumpSpeed;
     [SerializeField] private float m_Gravity;
-
-    [Header("Camera")]
-    [SerializeField] private GameObject m_RotationPoint;
-
-    private CharacterController m_CC;
-    private GameObject m_Player;
-    private float m_Speed;
     private Vector3 m_MoveDirection;
 
-    //Rotation
-    private float m_RotationX = 0.0f;
-    private float m_RotationY = 0.0f;
+    [Header("Camera")]
+    [SerializeField] private GameObject m_Camera;
+    [SerializeField] private Vector3 m_OffSet;
+    [SerializeField] private bool m_LookTowardsPlayer;
 
-    void Start()
+    private float m_Speed;
+    private CharacterController m_CC;
+    private GameObject m_Player;
+
+    void Start ()
     {
         Cursor.lockState = CursorLockMode.Locked;
         m_CC = GetComponent<CharacterController>();
         m_Player = this.gameObject;
     }
-
-    void Update()
+	
+	void Update ()
     {
         //Movement
         if (m_CC.isGrounded)
         {
-            m_MoveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+            m_MoveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, 0);
             m_MoveDirection = transform.TransformDirection(m_MoveDirection);
             m_MoveDirection *= m_Speed;
             if (Input.GetButton("Jump"))
@@ -54,12 +51,11 @@ public class Movement_ThirdPerson : MonoBehaviour
             m_Speed = m_NormalSpeed;
         }
 
-        //Player Rotation
-        m_RotationX += Input.GetAxis("Mouse X") * m_MouseSensitivity * Time.deltaTime;
-        m_RotationY += Input.GetAxis("Mouse Y") * m_MouseSensitivity * Time.deltaTime;
-        m_RotationY = Mathf.Clamp(m_RotationY, -90, 90);
-
-        transform.localRotation = Quaternion.AngleAxis(m_RotationX, Vector3.up);
-        m_RotationPoint.transform.localRotation = Quaternion.AngleAxis(m_RotationY, Vector3.left);
+        //Camera
+        m_Camera.transform.position = new Vector3(m_Player.transform.position.x + m_OffSet.x, m_Player.transform.position.y + m_OffSet.y, m_Player.transform.position.z + m_OffSet.z);
+        if (m_LookTowardsPlayer)
+        {
+            m_Camera.transform.LookAt(m_Player.transform);
+        }
     }
 }

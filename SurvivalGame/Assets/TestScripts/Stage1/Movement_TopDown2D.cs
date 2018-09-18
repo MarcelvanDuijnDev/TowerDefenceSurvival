@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Movement_Platformer3D : MonoBehaviour {
+public class Movement_TopDown2D : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
