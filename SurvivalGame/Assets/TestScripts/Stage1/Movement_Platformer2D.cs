@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FreeCam : MonoBehaviour {
+public class Movement_Platformer2D : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
