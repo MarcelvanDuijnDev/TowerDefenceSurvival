@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterController))]
 public class Movement_Platformer3D : MonoBehaviour
 {
     [Header("player")]

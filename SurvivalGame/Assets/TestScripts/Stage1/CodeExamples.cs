@@ -12,6 +12,7 @@ public class CodeExamples : MonoBehaviour
 	
 	void Update ()
     {
+     
     }
 
     void OnTriggerEnter(Collider Other)
@@ -42,7 +43,7 @@ switch (exampleIntValue)
         break;
 }
 
-
+    Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.identity);
 
 
 
