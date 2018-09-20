@@ -11,11 +11,12 @@ public class Tool_Scripts : EditorWindow
 {
     private string filePath = "Assets";
     private bool codeExamples = false;
+    private bool algorithms = false;
     private bool quickStart = true;
     private string searchScript = "";
     private string searchCode = "";
+    private string searchAlgorithms = "";
     private string searchScriptTag = "";
-    private string textField = "";
 
     //3D Options
     private int options3DStep;
@@ -27,7 +28,6 @@ public class Tool_Scripts : EditorWindow
     private string gameType = "";
     private string settings = "";
     private List<int> scriptsNeeded = new List<int>();
-    private bool[] scriptArray;
 
     private string sceneOptions = "";
 
@@ -47,29 +47,29 @@ public class Tool_Scripts : EditorWindow
     };
     public string[] scriptCode = new string[]
     {
+        "using System.Collections;\nusing System.Collections.Generic;\nusing UnityEngine;\n\npublic class Movement_Fps : MonoBehaviour {\n\n    [Header(\"Player\")]\n    [SerializeField] private float m_NormalSpeed;\n    [SerializeField] private float m_SprintSpeed;\n    [SerializeField] private float m_JumpSpeed;\n    [SerializeField] private float m_Gravity;\n\n    [Header(\"Camera\")]\n    [SerializeField] private Transform head;\n    [SerializeField] private float cameraSensitivity;\n\n    private CharacterController m_CC;\n    private Vector3 m_MoveDirection;\n    private float m_Speed;\n\n    //Rotation\n    private float m_RotationX = 0.0f;\n    private float m_RotationY = 0.0f;\n\n    void Start()\n    {\n        Cursor.lockState = CursorLockMode.Locked;\n        m_CC = GetComponent<CharacterController>();\n    }\n\n    void Update() \n    {\n        //Rotation\n        m_RotationX += Input.GetAxis(\"Mouse X\") * cameraSensitivity * Time.deltaTime;\n        m_RotationY += Input.GetAxis(\"Mouse Y\") * cameraSensitivity * Time.deltaTime;\n        m_RotationY = Mathf.Clamp (m_RotationY, -90, 90);\n\n        transform.localRotation = Quaternion.AngleAxis(m_RotationX, Vector3.up);\n        head.transform.localRotation = Quaternion.AngleAxis(m_RotationY, Vector3.left);\n\n        //Movement\n        if (m_CC.isGrounded)\n        {\n            m_MoveDirection = new Vector3(Input.GetAxis(\"Horizontal\"), 0, Input.GetAxis(\"Vertical\"));\n            m_MoveDirection = transform.TransformDirection(m_MoveDirection);\n            m_MoveDirection *= m_Speed;\n            if (Input.GetButton(\"Jump\"))\n                m_MoveDirection.y = m_JumpSpeed;\n        }\n        m_MoveDirection.y -= m_Gravity * Time.deltaTime;\n        m_CC.Move(m_MoveDirection * Time.deltaTime);\n\n        //Sprint\n        if (Input.GetKey(KeyCode.LeftShift))\n        {\n            m_Speed = m_SprintSpeed;\n        }\n        else\n        {\n            m_Speed = m_NormalSpeed;\n        }\n    }\n}\n",
+        "using System.Collections;\nusing System.Collections.Generic;\nusing UnityEngine;\n\npublic class Movement_ThirdPerson : MonoBehaviour\n{\n    [Header(\"Player\")]\n    [SerializeField] private float m_NormalSpeed;\n    [SerializeField] private float m_SprintSpeed;\n    [SerializeField] private float m_MouseSensitivity;\n    [SerializeField] private float m_JumpSpeed;\n    [SerializeField] private float m_Gravity;\n\n    [Header(\"Camera\")]\n    [SerializeField] private GameObject m_RotationPoint;\n\n    private CharacterController m_CC;\n    private GameObject m_Player;\n    private float m_Speed;\n    private Vector3 m_MoveDirection;\n\n    //Rotation\n    private float m_RotationX = 0.0f;\n    private float m_RotationY = 0.0f;\n\n    void Start()\n    {\n        Cursor.lockState = CursorLockMode.Locked;\n        m_CC = GetComponent<CharacterController>();\n        m_Player = this.gameObject;\n    }\n\n    void Update()\n    {\n        //Movement\n        if (m_CC.isGrounded)\n        {\n            m_MoveDirection = new Vector3(Input.GetAxis(\"Horizontal\"), 0, Input.GetAxis(\"Vertical\"));\n            m_MoveDirection = transform.TransformDirection(m_MoveDirection);\n            m_MoveDirection *= m_Speed;\n            if (Input.GetButton(\"Jump\"))\n                m_MoveDirection.y = m_JumpSpeed;\n        }\n        m_MoveDirection.y -= m_Gravity * Time.deltaTime;\n        m_CC.Move(m_MoveDirection * Time.deltaTime);\n\n        //Sprint\n        if (Input.GetKey(KeyCode.LeftShift))\n        {\n            m_Speed = m_SprintSpeed;\n        }\n        else\n        {\n            m_Speed = m_NormalSpeed;\n        }\n\n        //Player Rotation\n        m_RotationX += Input.GetAxis(\"Mouse X\") * m_MouseSensitivity * Time.deltaTime;\n        m_RotationY += Input.GetAxis(\"Mouse Y\") * m_MouseSensitivity * Time.deltaTime;\n        m_RotationY = Mathf.Clamp(m_RotationY, -90, 90);\n\n        transform.localRotation = Quaternion.AngleAxis(m_RotationX, Vector3.up);\n        m_RotationPoint.transform.localRotation = Quaternion.AngleAxis(m_RotationY, Vector3.left);\n    }\n}\n",
         "",
+        "using System.Collections;\nusing System.Collections.Generic;\nusing UnityEngine;\n\npublic class Movement_Platformer3D : MonoBehaviour\n{\n    [Header(\"player\")]\n    [SerializeField] private float m_NormalSpeed;\n    [SerializeField] private float m_SprintSpeed;\n    [SerializeField] private float m_JumpSpeed;\n    [SerializeField] private float m_Gravity;\n    private Vector3 m_MoveDirection;\n\n    [Header(\"Camera\")]\n    [SerializeField] private GameObject m_Camera;\n    [SerializeField] private Vector3 m_OffSet;\n    [SerializeField] private bool m_LookTowardsPlayer;\n\n    private float m_Speed;\n    private CharacterController m_CC;\n    private GameObject m_Player;\n\n    void Start ()\n    {\n        Cursor.lockState = CursorLockMode.Locked;\n        m_CC = GetComponent<CharacterController>();\n        m_Player = this.gameObject;\n    }\n\t\n\tvoid Update ()\n    {\n        //Movement\n        if (m_CC.isGrounded)\n        {\n            m_MoveDirection = new Vector3(Input.GetAxis(\"Horizontal\"), 0, 0);\n            m_MoveDirection = transform.TransformDirection(m_MoveDirection);\n            m_MoveDirection *= m_Speed;\n            if (Input.GetButton(\"Jump\"))\n                m_MoveDirection.y = m_JumpSpeed;\n        }\n        m_MoveDirection.y -= m_Gravity * Time.deltaTime;\n        m_CC.Move(m_MoveDirection * Time.deltaTime);\n\n        //Sprint\n        if (Input.GetKey(KeyCode.LeftShift))\n        {\n            m_Speed = m_SprintSpeed;\n        }\n        else\n        {\n            m_Speed = m_NormalSpeed;\n        }\n\n        //Camera\n        m_Camera.transform.position = new Vector3(m_Player.transform.position.x + m_OffSet.x, m_Player.transform.position.y + m_OffSet.y, m_Player.transform.position.z + m_OffSet.z);\n        if (m_LookTowardsPlayer)\n        {\n            m_Camera.transform.LookAt(m_Player.transform);\n        }\n    }\n}\n",
         "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "using System.Collections;\nusing System.Collections.Generic;\nusing UnityEngine;\n\npublic class Movement_TopDown3D : MonoBehaviour\n{\n    [Header(\"Camera\")]\n    [SerializeField] private Camera m_Camera;\n    [SerializeField] private Vector3 m_OffSet;\n    [SerializeField] private bool m_LookTowardsPlayer;\n    [Header(\"Player\")]\n    [SerializeField] private float m_NormalSpeed;\n    [SerializeField] private float m_SprintSpeed;\n\n    private Rigidbody m_rb;\n    private GameObject m_Player;\n    private float m_Speed;\n\n    void Start () \n    {\n        m_rb = GetComponent<Rigidbody>();\n        m_Player = this.gameObject;\n    }\n\t\n\tvoid Update ()\n    {\n        //Movement\n        Vector3 moveInput = new Vector3(Input.GetAxisRaw(\"Horizontal\"), 0f, Input.GetAxisRaw(\"Vertical\"));\n        if (Input.GetKey(KeyCode.LeftShift)) { m_Speed = m_SprintSpeed; } else { m_Speed = m_NormalSpeed; }\n        m_rb.velocity = moveInput * m_Speed;\n\n        //Camera\n        m_Camera.transform.position = new Vector3(m_Player.transform.position.x + m_OffSet.x, m_Player.transform.position.y + m_OffSet.y, m_Player.transform.position.z + m_OffSet.z);\n        if(m_LookTowardsPlayer)\n        {\n            m_Camera.transform.LookAt(m_Player.transform);\n        }\n\n        //Player Rotation\n        Ray cameraRay = m_Camera.ScreenPointToRay(Input.mousePosition);\n        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);\n        float rayLength;\n        if (groundPlane.Raycast(cameraRay, out rayLength))\n        {\n            Vector3 pointToLook = cameraRay.GetPoint(rayLength);\n            transform.LookAt(new Vector3(pointToLook.x, transform.position.y, pointToLook.z));\n        }\n    }\n}\n",
+        "using System.Collections;\nusing System.Collections.Generic;\nusing UnityEngine;\n\npublic class FreeCam : MonoBehaviour\n{\n    [Header(\"Settings\")]\n    [SerializeField] private float m_MouseSensitivity;\n    [SerializeField] private float m_CameraSpeed;\n    [SerializeField] private float m_ShiftSpeed;\n\n    private float rotationX, rotationY, m_Speed;\n\t\n\tvoid Update ()\n    {\n        Vector3 moveInput = new Vector3(Input.GetAxisRaw(\"Horizontal\"), 0f, Input.GetAxisRaw(\"Vertical\"));\n        if (Input.GetKey(KeyCode.LeftShift)) { m_Speed = m_ShiftSpeed; } else { m_Speed = m_CameraSpeed; }\n        transform.Translate(moveInput * m_Speed * Time.deltaTime);\n\n        rotationX += Input.GetAxis(\"Mouse X\") * m_MouseSensitivity * Time.deltaTime;\n        rotationY += Input.GetAxis(\"Mouse Y\") * m_MouseSensitivity * Time.deltaTime;\n\n        transform.eulerAngles = new Vector3(-rotationY, rotationX, 0);\n    }\n}\n",
+        "using System.Collections;\nusing System.Collections.Generic;\nusing UnityEngine;\n\npublic class ObjectPool : MonoBehaviour\n{\n    [Header(\"Amount\")]\n    public int pooledAmount;\n\n    [Header(\"Object\")]\n    public GameObject prefabObj;\n\n    [HideInInspector]public List<GameObject> objects;\n\n    void Start()\n    {\n        for (int i = 0; i < pooledAmount; i++)\n        {\n            GameObject obj = (GameObject)Instantiate(prefabObj);\n            obj.transform.parent = gameObject.transform;\n            obj.SetActive(false);\n            objects.Add(obj);\n        }\n    }\n}\n",
+        "using System.Collections;\nusing System.Collections.Generic;\nusing UnityEngine;\n\npublic class Rotation : MonoBehaviour\n{\n    [SerializeField] private Vector3 m_Rotation;\n\n\tvoid Update ()\n    {\n        this.transform.Rotate(m_Rotation.x * Time.deltaTime, m_Rotation.y * Time.deltaTime, m_Rotation.z * Time.deltaTime);\n    }\n}\n",
+        "using System.Collections;\nusing System.Collections.Generic;\nusing UnityEngine.SceneManagement;\nusing UnityEngine;\n\npublic class Menu : MonoBehaviour\n{\n    public void LoadScene(int SceneID)\n    {\n        SceneManager.LoadScene(SceneID);\n    }\n\n    public void LoadScene(string SceneName)\n    {\n        SceneManager.LoadScene(SceneManager.GetSceneByName(SceneName).buildIndex);\n    }\n\n    public void Quit()\n    {\n        Application.Quit();\n    }\n}\n"
     };
     public string[] scriptTags = new string[]
     {
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "3D",
+        "3D",
+        "2D",
+        "3D",
+        "2D",
+        "3D",
+        "3D",
+        "Other",
+        "Other",
+        "Other"
     };
     #endregion
     #region Code Examples
@@ -77,17 +77,23 @@ public class Tool_Scripts : EditorWindow
     {
         "for",
         "switch",
-        "ontriggerenter",
-        "",
-        "",
+        "ontriggerenter"
     };
     public string[] codeExampleCode = new string[]
     {
         "for (int i = 0; i < length; i++)\n            {\n\n            }",
-        "",
-        "",
-        "",
-        "",
+        "switch (exampleIntValue)\n{\n    case 1:\n        //Do Something\n        break;\n    case 2:\n        //Do Something Else\n        break;\n    default:\n        //If Nothing Do This\n        break;\n}",
+        "    void OnTriggerEnter(Collider Other)\n    {\n\n    }"
+    };
+    #endregion
+    #region Algorithms
+    public string[] algorithmsName = new string[]
+    {
+        "New Algorithm"
+    };
+    public string[] algorithmsCode = new string[]
+    {
+        ""
     };
     #endregion
 
@@ -106,28 +112,37 @@ public class Tool_Scripts : EditorWindow
             if (GUILayout.Button("Scripts"))
             {
                 codeExamples = false;
+                algorithms = false;
             }
-            if (GUILayout.Button("Code Examples"))
+            if (GUILayout.Button("Code"))
             {
                 codeExamples = true;
+                algorithms = false;
+            }
+            if (GUILayout.Button("algorithms"))
+            {
+                algorithms = true;
+                codeExamples = false;
             }
             GUILayout.EndHorizontal();
-
-            GUILayout.Label("Scripts", EditorStyles.boldLabel);
             GUILayout.BeginVertical("Box");
-            if (!codeExamples)
+            if (!codeExamples && !algorithms)
             {
                 searchScript = EditorGUILayout.TextField("Search: ", searchScript);
                 searchScriptTag = EditorGUILayout.TextField("SearchTag: ", searchScriptTag);
             }
-            else
+            if(codeExamples)
             {
                 searchCode = EditorGUILayout.TextField("Search: ", searchCode);
+            }
+            if (algorithms)
+            {
+                searchAlgorithms = EditorGUILayout.TextField("Search: ", searchAlgorithms);
             }
             GUILayout.EndVertical();
             GUILayout.BeginVertical("Box");
 
-            if (!codeExamples)
+            if (!codeExamples && !algorithms)
             {
                 for (int i = 0; i < scriptName.Length; i++)
                 {
@@ -149,16 +164,12 @@ public class Tool_Scripts : EditorWindow
                             {
                                 EditorGUIUtility.systemCopyBuffer = scriptCode[i];
                             }
-                            if (GUILayout.Button("Show"))
-                            {
-                                textField = scriptCode[i];
-                            }
                             GUILayout.EndHorizontal();
                         }
                     }
                 }
             }
-            else
+            if (codeExamples)
             {
                 for (int i = 0; i < codeExampleName.Length; i++)
                 {
@@ -170,9 +181,25 @@ public class Tool_Scripts : EditorWindow
                         {
                             EditorGUIUtility.systemCopyBuffer = codeExampleCode[i];
                         }
-                        if (GUILayout.Button("Show"))
+                        GUILayout.EndHorizontal();
+                    }
+                }
+            }
+            if (algorithms)
+            {
+                for (int i = 0; i < algorithmsName.Length; i++)
+                {
+                    if (searchCode == "" || algorithmsName[i].ToLower().Contains(searchCode.ToLower()))
+                    {
+                        GUILayout.BeginHorizontal("Box");
+                        GUILayout.Label(algorithmsName[i], EditorStyles.boldLabel);
+                        if (GUILayout.Button("Add"))
                         {
-                            textField = codeExampleCode[i];
+                            //AddScripts(scriptName[i], scriptCode[i]);
+                        }
+                        if (GUILayout.Button("Copy"))
+                        {
+                            EditorGUIUtility.systemCopyBuffer = algorithmsCode[i];
                         }
                         GUILayout.EndHorizontal();
                     }
@@ -204,30 +231,29 @@ public class Tool_Scripts : EditorWindow
             //3D
             if (options3DStep == 1)
             {
-                if (GUILayout.Button("First Person Shooter", GUILayout.Height(position.height * 0.29f)))
+                if (GUILayout.Button("First Person Shooter", GUILayout.Height(position.height * 0.22f)))
                 {
                     gameType = "FPS";
                     settings += "Type: First Person Shooter \n";
-                    options3DStep = 2;
-                    scriptArray = new bool[1];
+                    options3DStep = 2; 
                 }
-                if (GUILayout.Button("Third Person", GUILayout.Height(position.height * 0.29f)))
+                if (GUILayout.Button("Third Person", GUILayout.Height(position.height * 0.22f)))
                 {
                     gameType = "ThirdPerson";
                     settings += "Type: ThirdPerson \n";
                     options3DStep = 2;
-                    scriptArray = new bool[1];
                 }
-                if (GUILayout.Button("Top Down", GUILayout.Height(position.height * 0.29f)))
+                if (GUILayout.Button("Top Down", GUILayout.Height(position.height * 0.22f)))
                 {
                     gameType = "TopDown";
                     settings += "Type: Top Down \n";
                     options3DStep = 2;
-                    scriptArray = new bool[1];
                 }
-                for (int i = 0; i < scriptArray.Length; i++)
+                if (GUILayout.Button("PlatFormer3D", GUILayout.Height(position.height * 0.22f)))
                 {
-                    scriptArray[i] = true;
+                    gameType = "PlatFormer3D";
+                    settings += "Type: PlatFormer3D \n";
+                    options3DStep = 2;
                 }
             }
             if (options3DStep == 2)
@@ -254,7 +280,6 @@ public class Tool_Scripts : EditorWindow
             if (options3DStep == 3)
             {
                 GUILayout.Label(settings, EditorStyles.boldLabel);
-                //Select Scripts
                 if (GUILayout.Button("Confirm", GUILayout.Height(position.height * 0.3f)))
                 {
                     Set3DSettings1();
