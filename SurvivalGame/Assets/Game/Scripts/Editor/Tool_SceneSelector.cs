@@ -1,37 +1,38 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEditor;
 
 public class Tool_SceneSelector : EditorWindow
 {
-    private Tool_SceneTabs[] sceneTabs = new Tool_SceneTabs[SceneManager.sceneCount];
+    Tool_SceneGet[] sceneGet = new Tool_SceneGet[EditorSceneManager.sceneCount];
+    public string[] sceneName = new string[EditorSceneManager.sceneCount];
 
-    [MenuItem("Scenes/")]
-    static void Init()
+    void Update()
     {
-        //Tool_Scripts window = (Tool_Scripts)EditorWindow.GetWindow(typeof(Tool_Scripts));
-        //window.Show();
-    }
-
-    void OnGUI()
-    {
-    }
-
-
-    [MenuItem("Scenes/scene1test")]
-    void loadScene()
-    {
-        
+        for (int i = 0; i < EditorSceneManager.sceneCount; i++)
+        {
+            sceneName[i] = EditorSceneManager.GetSceneByBuildIndex(i).name;
+        }
     }
 }
 
-public class Tool_SceneTabs : Tool_SceneSelector
+public class Tool_SceneGet : Tool_SceneSelector
 {
-    //string name = "Scenes/" + SceneManager.GetSceneByBuildIndex(0).name.ToString()
-    //[MenuItem(name.ToString())]
+    Tool_SceneSelector sceneSelector = new Tool_SceneSelector();
+    string[] scenename = new string[0];
 
+    void Update()
+    {
+        scenename = sceneSelector.sceneName;
+    }
+
+    [MenuItem("Scenes/" + "test")]
+    static void LoadScene()
+    {
+        //EditorSceneManager.OpenScene();
+    }
 }
+
 

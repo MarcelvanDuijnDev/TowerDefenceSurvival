@@ -248,7 +248,7 @@ public class Tool_Scripts : EditorWindow
         }
     }
 
-    void CreateObjects()
+    public void CreateObjects()
     {
         //3D
         if (selectedTabQuikStart == 1)
