@@ -18,7 +18,8 @@ public class Tool_Scripts : EditorWindow
 
     private int selectedTab = 3;
     private int selectedTabQuikStart;
-    private int selectedTabType;
+    private int selectedTabType3D;
+    private int selectedTabType2D;
     private int selectedTabOptions;
 
     private bool addScene = true, addScripts = true, addObject = true;
@@ -197,7 +198,14 @@ public class Tool_Scripts : EditorWindow
             GUILayout.EndVertical();
 
             GUILayout.BeginVertical("Box");
-            selectedTabType = GUILayout.Toolbar(selectedTabType, new string[] { "FPS", "ThirdPerson", "TopDown", "Platformer" });
+            if(selectedTabQuikStart == 0)
+            {
+                selectedTabType2D = GUILayout.Toolbar(selectedTabType2D, new string[] { "TopDown", "Platformer" });
+            }
+            else
+            {
+                selectedTabType3D = GUILayout.Toolbar(selectedTabType3D, new string[] { "FPS", "ThirdPerson", "TopDown", "Platformer" });
+            }
             GUILayout.EndVertical();
 
             GUILayout.BeginVertical("Box");
@@ -252,17 +260,17 @@ public class Tool_Scripts : EditorWindow
             GameObject player = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             player.name = "Player";
             player.transform.position = new Vector3(0, 2, 0);
-            player.AddComponent<CharacterController>();
 
             GameObject cameraObj = GameObject.Find("Main Camera");
-
-            if (selectedTabType == 0)
+            //FPS
+            if (selectedTabType3D == 0)
             {
                 groundCube.transform.localScale = new Vector3(25, 1, 25);
                 cameraObj.transform.parent = player.transform;
                 cameraObj.transform.localPosition = new Vector3(0, 0.65f, 0);
             }
-            if (selectedTabType == 1)
+            //ThirdPerson
+            if (selectedTabType3D == 1)
             {
                 groundCube.transform.localScale = new Vector3(25, 1, 25);
                 GameObject rotationPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -272,11 +280,15 @@ public class Tool_Scripts : EditorWindow
                 cameraObj.transform.localPosition = new Vector3(1, 0.65f, -1.5f);
                 rotationPoint.transform.parent = player.transform;
             }
-            if (selectedTabType == 2)
+            //TopDown
+            if (selectedTabType3D == 2)
             {
                 groundCube.transform.localScale = new Vector3(25, 1, 25);
+                cameraObj.transform.position = new Vector3(0,10,-1.5f);
+                cameraObj.transform.eulerAngles = new Vector3(80, 0, 0);
             }
-            if (selectedTabType == 3)
+            //Platformer
+            if (selectedTabType3D == 3)
             {
                 groundCube.transform.localScale = new Vector3(25, 1, 1);
             }
@@ -285,26 +297,57 @@ public class Tool_Scripts : EditorWindow
         //2D
         if (selectedTabQuikStart == 0)
         {
+            GameObject groundCube = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            groundCube.name = "Ground";
+            groundCube.transform.position = new Vector3(0, 0, 0);
 
+            GameObject player = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            player.name = "Player";
+            player.transform.position = new Vector3(0, 2, 0);
+
+            GameObject cameraObj = GameObject.Find("Main Camera");
+            Camera cam = cameraObj.GetComponent<Camera>();
+            cam.orthographic = true;
+
+            //TopDown
+            if (selectedTabType2D == 0)
+            {
+                groundCube.transform.localScale = new Vector3(100,100,1);
+                groundCube.transform.position = new Vector3(0, 0, 1);
+            }
+            //Platformer
+            if(selectedTabType2D == 1)
+            {
+                groundCube.transform.localScale = new Vector3(25,1,1);
+            }
         }
     }
     void CreateScripts()
     {
-        if (selectedTabType == 0)
+        //3D
+        if (selectedTabType3D == 0)
         {
             AddScripts(scriptName[0], scriptCode[0]);
         }
-        if (selectedTabType == 1)
+        if (selectedTabType3D == 1)
         {
             AddScripts(scriptName[1], scriptCode[1]);
         }
-        if (selectedTabType == 2)
+        if (selectedTabType3D == 2)
         {
             AddScripts(scriptName[4], scriptCode[4]);
         }
-        if (selectedTabType == 3)
+        if (selectedTabType3D == 3)
         {
             AddScripts(scriptName[3], scriptCode[3]);
+        }
+        if (selectedTabType2D == 0)
+        {
+
+        }
+        if (selectedTabType2D == 1)
+        {
+
         }
     }
 }
