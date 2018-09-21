@@ -21,7 +21,7 @@ public class Tool_Scripts : EditorWindow
     private int selectedTabType;
     private int selectedTabOptions;
 
-    private bool addScene, addScripts, addObject;
+    private bool addScene = true, addScripts = true, addObject = true;
 
     #region Scripts
     public string[] scriptName = new string[]
@@ -102,109 +102,122 @@ public class Tool_Scripts : EditorWindow
     {
         selectedTab = GUILayout.Toolbar(selectedTab, new string[] { "Scripts", "Code", "Algorithms", "QuikStart" });
 
-        //Search
-        GUILayout.BeginVertical("Box");
-        if (selectedTab == 0)
+        if (selectedTab != 3)
         {
-            searchScript = EditorGUILayout.TextField("Search: ", searchScript);
-            searchScriptTag = EditorGUILayout.TextField("SearchTag: ", searchScriptTag);
-        }
-        if (selectedTab == 1)
-        {
-            searchCode = EditorGUILayout.TextField("Search: ", searchCode);
-        }
-        if (selectedTab == 2)
-        {
-            searchAlgorithms = EditorGUILayout.TextField("Search: ", searchAlgorithms);
-        }
-        GUILayout.EndVertical();
-
-        //Results
-        GUILayout.BeginVertical("Box");
-        if (selectedTab == 0)
-        {
-            for (int i = 0; i < scriptName.Length; i++)
+            //Search
+            GUILayout.BeginVertical("Box");
+            if (selectedTab == 0)
             {
-                if (searchScript == "" || scriptName[i].ToLower().Contains(searchScript.ToLower()))
+                searchScript = EditorGUILayout.TextField("Search: ", searchScript);
+                searchScriptTag = EditorGUILayout.TextField("SearchTag: ", searchScriptTag);
+            }
+            if (selectedTab == 1)
+            {
+                searchCode = EditorGUILayout.TextField("Search: ", searchCode);
+            }
+            if (selectedTab == 2)
+            {
+                searchAlgorithms = EditorGUILayout.TextField("Search: ", searchAlgorithms);
+            }
+            GUILayout.EndVertical();
+
+            //Results
+            GUILayout.BeginVertical("Box");
+            if (selectedTab == 0)
+            {
+                for (int i = 0; i < scriptName.Length; i++)
                 {
-                    if (scriptTags[i].ToLower().Contains(searchScriptTag.ToLower()) || scriptTags[i] == "" || scriptTags[i] == null)
+                    if (searchScript == "" || scriptName[i].ToLower().Contains(searchScript.ToLower()))
+                    {
+                        if (scriptTags[i].ToLower().Contains(searchScriptTag.ToLower()) || scriptTags[i] == "" || scriptTags[i] == null)
+                        {
+                            GUILayout.BeginHorizontal("Box");
+                            GUILayout.Label(scriptName[i], EditorStyles.boldLabel);
+                            if (GUILayout.Button("Add"))
+                            {
+                                AddScripts(scriptName[i], scriptCode[i]);
+                                if (i == 7)
+                                {
+                                    AddScripts("UseObjectPool", "using System.Collections;\nusing System.Collections.Generic;\nusing UnityEngine;\n\npublic class UseObjectPool : MonoBehaviour\n{\n    [SerializeField]private ObjectPool1 objectPoolScript;\n\n    void Use()\n    {\n        for (int i = 0; i < objectPoolScript.objects.Count; i++)\n        {\n            if (!objectPoolScript.objects[i].activeInHierarchy)\n            {\n                objectPoolScript.objects[i].transform.position = transform.position;\n                objectPoolScript.objects[i].transform.rotation = transform.rotation;\n                objectPoolScript.objects[i].SetActive(true);\n                break;\n            }\n        }\n    }\n}\n");
+                                }
+                            }
+                            if (GUILayout.Button("Copy"))
+                            {
+                                EditorGUIUtility.systemCopyBuffer = scriptCode[i];
+                            }
+                            GUILayout.EndHorizontal();
+                        }
+                    }
+                }
+            }
+            if (selectedTab == 1)
+            {
+                for (int i = 0; i < codeExampleName.Length; i++)
+                {
+                    if (searchCode == "" || codeExampleName[i].ToLower().Contains(searchCode.ToLower()))
                     {
                         GUILayout.BeginHorizontal("Box");
-                        GUILayout.Label(scriptName[i], EditorStyles.boldLabel);
-                        if (GUILayout.Button("Add"))
-                        {
-                            AddScripts(scriptName[i], scriptCode[i]);
-                            if (i == 7)
-                            {
-                                AddScripts("UseObjectPool", "using System.Collections;\nusing System.Collections.Generic;\nusing UnityEngine;\n\npublic class UseObjectPool : MonoBehaviour\n{\n    [SerializeField]private ObjectPool1 objectPoolScript;\n\n    void Use()\n    {\n        for (int i = 0; i < objectPoolScript.objects.Count; i++)\n        {\n            if (!objectPoolScript.objects[i].activeInHierarchy)\n            {\n                objectPoolScript.objects[i].transform.position = transform.position;\n                objectPoolScript.objects[i].transform.rotation = transform.rotation;\n                objectPoolScript.objects[i].SetActive(true);\n                break;\n            }\n        }\n    }\n}\n");
-                            }
-                        }
+                        GUILayout.Label(codeExampleName[i], EditorStyles.boldLabel);
                         if (GUILayout.Button("Copy"))
                         {
-                            EditorGUIUtility.systemCopyBuffer = scriptCode[i];
+                            EditorGUIUtility.systemCopyBuffer = codeExampleCode[i];
                         }
                         GUILayout.EndHorizontal();
                     }
                 }
             }
-        }
-        if (selectedTab == 1)
-        {
-            for (int i = 0; i < codeExampleName.Length; i++)
+            if (selectedTab == 2)
             {
-                if (searchCode == "" || codeExampleName[i].ToLower().Contains(searchCode.ToLower()))
+                for (int i = 0; i < algorithmsName.Length; i++)
                 {
-                    GUILayout.BeginHorizontal("Box");
-                    GUILayout.Label(codeExampleName[i], EditorStyles.boldLabel);
-                    if (GUILayout.Button("Copy"))
+                    if (searchCode == "" || algorithmsName[i].ToLower().Contains(searchCode.ToLower()))
                     {
-                        EditorGUIUtility.systemCopyBuffer = codeExampleCode[i];
+                        GUILayout.BeginHorizontal("Box");
+                        GUILayout.Label(algorithmsName[i], EditorStyles.boldLabel);
+                        if (GUILayout.Button("Add"))
+                        {
+                            //AddScripts(scriptName[i], scriptCode[i]);
+                        }
+                        if (GUILayout.Button("Copy"))
+                        {
+                            EditorGUIUtility.systemCopyBuffer = algorithmsCode[i];
+                        }
+                        GUILayout.EndHorizontal();
                     }
-                    GUILayout.EndHorizontal();
                 }
             }
+            GUILayout.EndVertical();
         }
-        if (selectedTab == 2)
-        {
-            for (int i = 0; i < algorithmsName.Length; i++)
-            {
-                if (searchCode == "" || algorithmsName[i].ToLower().Contains(searchCode.ToLower()))
-                {
-                    GUILayout.BeginHorizontal("Box");
-                    GUILayout.Label(algorithmsName[i], EditorStyles.boldLabel);
-                    if (GUILayout.Button("Add"))
-                    {
-                        //AddScripts(scriptName[i], scriptCode[i]);
-                    }
-                    if (GUILayout.Button("Copy"))
-                    {
-                        EditorGUIUtility.systemCopyBuffer = algorithmsCode[i];
-                    }
-                    GUILayout.EndHorizontal();
-                }
-            }
-        }
-        GUILayout.EndVertical();
 
         //Quick Start
         if (selectedTab == 3)
         {
             GUILayout.BeginVertical("Box");
             selectedTabQuikStart = GUILayout.Toolbar(selectedTabQuikStart, new string[] { "2D", "3D" });
-            selectedTabType = GUILayout.Toolbar(selectedTabType, new string[] { "FPS", "ThirdPerson", "TopDown", "Platformer" });
+            GUILayout.EndVertical();
 
+            GUILayout.BeginVertical("Box");
+            selectedTabType = GUILayout.Toolbar(selectedTabType, new string[] { "FPS", "ThirdPerson", "TopDown", "Platformer" });
+            GUILayout.EndVertical();
+
+            GUILayout.BeginVertical("Box");
             GUILayout.BeginHorizontal(EditorStyles.toolbar);
+            Color defaultColor = GUI.backgroundColor;
+            if (addScene) { GUI.backgroundColor = new Color(0, 1, 0); } else { GUI.backgroundColor = new Color(1, 0, 0); }
             addScene = GUILayout.Toggle(addScene, "Scene", EditorStyles.toolbarButton);
+            if (addObject) { GUI.backgroundColor = new Color(0, 1, 0); } else { GUI.backgroundColor = new Color(1, 0, 0); }
             addObject = GUILayout.Toggle(addObject, "Objects", EditorStyles.toolbarButton);
+            if (addScripts) { GUI.backgroundColor = new Color(0, 1, 0); } else { GUI.backgroundColor = new Color(1, 0, 0); }
             addScripts = GUILayout.Toggle(addScripts, "Scripts", EditorStyles.toolbarButton);
+            GUI.backgroundColor = defaultColor;
             GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
 
             if (GUILayout.Button("Create"))
             {
                 if (addScene)
                 {
                     Scene newScene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
-                    CreateObjects();
                 }
                 if (addObject)
                 {
@@ -215,7 +228,6 @@ public class Tool_Scripts : EditorWindow
                     CreateScripts();
                 }
             }
-            GUILayout.EndVertical();
         }
     }
 
@@ -230,40 +242,50 @@ public class Tool_Scripts : EditorWindow
 
     void CreateObjects()
     {
-        GameObject groundCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        groundCube.name = "Ground";
-        groundCube.transform.position = new Vector3(0, 0, 0);
+        //3D
+        if (selectedTabQuikStart == 1)
+        {
+            GameObject groundCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            groundCube.name = "Ground";
+            groundCube.transform.position = new Vector3(0, 0, 0);
 
-        GameObject player = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        player.name = "Player";
-        player.transform.position = new Vector3(0, 2, 0);
-        player.AddComponent<CharacterController>();
+            GameObject player = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            player.name = "Player";
+            player.transform.position = new Vector3(0, 2, 0);
+            player.AddComponent<CharacterController>();
 
-        GameObject cameraObj = GameObject.Find("Main Camera");
+            GameObject cameraObj = GameObject.Find("Main Camera");
 
-        if (selectedTabType == 0)
-        {
-            groundCube.transform.localScale = new Vector3(25, 1, 25);
-            cameraObj.transform.parent = player.transform;
-            cameraObj.transform.localPosition = new Vector3(0, 0.65f, 0);
+            if (selectedTabType == 0)
+            {
+                groundCube.transform.localScale = new Vector3(25, 1, 25);
+                cameraObj.transform.parent = player.transform;
+                cameraObj.transform.localPosition = new Vector3(0, 0.65f, 0);
+            }
+            if (selectedTabType == 1)
+            {
+                groundCube.transform.localScale = new Vector3(25, 1, 25);
+                GameObject rotationPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                rotationPoint.name = "rotationPoint";
+                rotationPoint.transform.position = new Vector3(0, 2, 0);
+                cameraObj.transform.parent = rotationPoint.transform;
+                cameraObj.transform.localPosition = new Vector3(1, 0.65f, -1.5f);
+                rotationPoint.transform.parent = player.transform;
+            }
+            if (selectedTabType == 2)
+            {
+                groundCube.transform.localScale = new Vector3(25, 1, 25);
+            }
+            if (selectedTabType == 3)
+            {
+                groundCube.transform.localScale = new Vector3(25, 1, 1);
+            }
         }
-        if (selectedTabType == 1)
+
+        //2D
+        if (selectedTabQuikStart == 0)
         {
-            groundCube.transform.localScale = new Vector3(25, 1, 25);
-            GameObject rotationPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            rotationPoint.name = "rotationPoint";
-            rotationPoint.transform.position = new Vector3(0, 2, 0);
-            cameraObj.transform.parent = rotationPoint.transform;
-            cameraObj.transform.localPosition = new Vector3(1, 0.65f, -1.5f);
-            rotationPoint.transform.parent = player.transform;
-        }
-        if (selectedTabType == 2)
-        {
-            groundCube.transform.localScale = new Vector3(25, 1, 25);
-        }
-        if (selectedTabType == 3)
-        {
-            groundCube.transform.localScale = new Vector3(25, 1, 1);
+
         }
     }
     void CreateScripts()
