@@ -16,6 +16,9 @@ public class HexGridNav : MonoBehaviour
     private TextMeshPro[] textMesh;
     public Hex[] hexType;
 
+    private int currentStep;
+    private List<Vector2> stepsFinal;
+
 	void Start ()
     {
         unitScript = unit.GetComponent<Unit>();
@@ -64,11 +67,12 @@ public class HexGridNav : MonoBehaviour
 
     public void GetPath(int x, int z)
     {
+        stepsFinal.Clear();
         Debug.Log("GetPath");
 
-        Vector2 currenTile = new Vector2(5,4);
-        Vector2 currentTileCalc = new Vector2(5,4);
-        Vector2 finalDestenation = new Vector2(0,0);
+        Vector2 currenTile = new Vector2(unitScript.tileX, unitScript.tileZ);
+        Vector2 currentTileCalc = new Vector2(unitScript.tileX, unitScript.tileZ);
+        Vector2 finalDestenation = new Vector2(x, z);
 
         int stepCount = 0;
         List<Vector2> steps = new List<Vector2>();
@@ -130,10 +134,29 @@ public class HexGridNav : MonoBehaviour
                 final = true;
             }
         }
-
+        stepsFinal = getTile;
     }
 
-	void Update ()
+    public void SetStep()
+    {
+        if (stepsFinal.Count >= 0)
+        {
+            float offset = 0;
+            if (stepsFinal[currentStep].y % 2 == 1)
+            {
+                offset = 0.86605f * 1;
+            }
+            else
+            {
+                offset = 0;
+            }
+            unit.transform.position = new Vector3(stepsFinal[currentStep].x * 1.7321f + offset, 0.5f, stepsFinal[currentStep].y * -1.5f);
+        }
+        currentStep += 1;
+    }
+
+
+    void Update ()
     {
 		
 	}
