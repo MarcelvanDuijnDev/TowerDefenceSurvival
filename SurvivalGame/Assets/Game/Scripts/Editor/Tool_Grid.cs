@@ -157,7 +157,9 @@ public class Tool_Grid : EditorWindow
     {
         Vector3 objPos = obj.transform.position;
 
-        GameObject gridObj = Instantiate(prefabObj, new Vector3(positions.x, positions.y, positions.z), Quaternion.identity);
+        GameObject gridObj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        gridObj.transform.position = new Vector3(positions.x, positions.y, positions.z);
+
         DestroyImmediate(gridObj.GetComponent<BoxCollider>());
 
         float size = hexSize;
