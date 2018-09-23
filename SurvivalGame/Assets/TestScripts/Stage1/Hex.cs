@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
 
 [System.Serializable]
@@ -15,7 +16,8 @@ public class Hex : MonoBehaviour
 
     void OnMouseUp()
     {
-        Debug.Log(xas.ToString() + " " + zas.ToString());
-        hexgridScript.MoveUnit(xas, zas);
+        Debug.Log("Clicked Tile: " + xas.ToString() + " " + zas.ToString());
+        //hexgridScript.MoveUnit(xas, zas);
+        hexgridScript.GetPath(xas, zas);
     }
 }
