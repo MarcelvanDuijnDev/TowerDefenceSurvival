@@ -17,7 +17,7 @@ public class HexGridNav : MonoBehaviour
     public Hex[] hexType;
 
     private int currentStep;
-    private List<Vector2> stepsFinal;
+    private List<Vector2> stepsFinal = new List<Vector2>();
 
 	void Start ()
     {

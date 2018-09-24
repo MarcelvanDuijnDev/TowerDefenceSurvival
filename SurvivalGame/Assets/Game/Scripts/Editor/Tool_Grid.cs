@@ -9,18 +9,31 @@ using System.IO;
 
 public class Tool_Grid : EditorWindow
 {
+    #region Variables
     private GameObject prefabObj;
     private GameObject obj;
     private List<GameObject> prefabObjSave = new List<GameObject>();
 
     private int mode;
-    private int totalObjects;
+    private int totalObjects = 125;
 
-    private int xAsLenght, yAsLenght, zAsLenght;
-    private float radius;
-    private int objectAmount;
-    private float distant;
-    private float hexSize;
+    //Cube
+    private int xAsLenght = 5, yAsLenght = 5, zAsLenght = 5;
+    //Circle
+    private float radius = 5;
+    private int objectAmount = 10;
+    private float distant = 1.5f;
+    //Hex
+    private int hexLengthX = 10, hexLengthZ = 10;
+    private float hexSize = 1;
+
+    //Advanced All
+    private int adv_Menu;
+    private bool adv_Center = true;
+    private bool adv_Invert;
+    private Vector3 adv_Rotation;
+    private Vector3 adv_RotationObj;
+    #endregion
 
     [MenuItem("Tools/Grid")]
     static void Init()
@@ -31,7 +44,7 @@ public class Tool_Grid : EditorWindow
 
     void OnGUI()
     {
-        mode = GUILayout.Toolbar(mode, new string[] { "Line", "Vlak", "Cube", "Circle", "Hexagon" });
+        mode = GUILayout.Toolbar(mode, new string[] { "Cube", "Circle", "Hexagon" });
 
         GUILayout.BeginVertical("Box");
         prefabObj = (GameObject)EditorGUILayout.ObjectField("Prefab Object: ", prefabObj, typeof(GameObject), true);
@@ -39,33 +52,48 @@ public class Tool_Grid : EditorWindow
         GUILayout.EndVertical();
 
         GUILayout.BeginVertical("Box");
-        if (mode == 0 || mode == 1 || mode == 2)
+        if (mode == 0)
         {
-            distant = EditorGUILayout.FloatField("Distant: ", distant);
+            distant = EditorGUILayout.FloatField("Distance: ", distant);
             xAsLenght = EditorGUILayout.IntField("xAsLenght: ", xAsLenght);
             yAsLenght = EditorGUILayout.IntField("yAsLenght: ", yAsLenght);
             zAsLenght = EditorGUILayout.IntField("zAsLenght: ", zAsLenght);
         }
-        if(mode == 3)
+        if (mode == 1)
         {
             radius = EditorGUILayout.FloatField("Radius: ", radius);
             objectAmount = EditorGUILayout.IntField("Object Amount: ", objectAmount);
         }
-        if(mode == 4)
+        if (mode == 2)
         {
             hexSize = EditorGUILayout.FloatField("Size: ", hexSize);
-            xAsLenght = EditorGUILayout.IntField("xAsLenght: ", xAsLenght);
-            zAsLenght = EditorGUILayout.IntField("zAsLenght: ", zAsLenght);
+            hexLengthX = EditorGUILayout.IntField("Collom: ", hexLengthX);
+            hexLengthZ = EditorGUILayout.IntField("Row: ", hexLengthZ);
         }
         if (GUILayout.Button("Calculate Total Objects"))
         {
-            if (mode == 0) { totalObjects = xAsLenght; }
-            if (mode == 1) { totalObjects = xAsLenght * zAsLenght; }
-            if (mode == 2) { totalObjects = xAsLenght * zAsLenght * yAsLenght; }
-            if (mode == 3) { totalObjects = objectAmount; }
-            if (mode == 4) { totalObjects = xAsLenght * zAsLenght; }
+            if (mode == 0) { totalObjects = xAsLenght * zAsLenght * yAsLenght; }
+            if (mode == 1) { totalObjects = objectAmount; }
+            if (mode == 2) { totalObjects = hexLengthX * hexLengthZ; }
         }
         EditorGUILayout.LabelField("Total: " + totalObjects.ToString());
+        GUILayout.EndVertical();
+
+        GUILayout.BeginVertical("Box");
+        adv_Menu = GUILayout.Toolbar(adv_Menu, new string[] { "Options","Rotation" });
+        if (mode == 0 && adv_Menu == 0 || mode == 2 && adv_Menu == 0)
+        {
+            adv_Center = EditorGUILayout.Toggle("Center", adv_Center);
+        }
+        if(mode == 2)
+        {
+            adv_Invert = EditorGUILayout.Toggle("Invert: ", adv_Invert);
+        }
+        if (adv_Menu == 1)
+        {
+            adv_Rotation = EditorGUILayout.Vector3Field("Rotation: ", adv_Rotation);
+            adv_RotationObj = EditorGUILayout.Vector3Field("Rotation Obj: ", adv_RotationObj);
+        }
         GUILayout.EndVertical();
 
         GUILayout.BeginVertical("Box");
@@ -82,13 +110,13 @@ public class Tool_Grid : EditorWindow
 
             Vector3 objPos = obj.transform.position;
 
-            if (mode == 0) { CreateCube(new Vector3(xAsLenght, 0, 0)); }
-            if (mode == 1) { CreateCube(new Vector3(xAsLenght, 0, zAsLenght)); }
-            if (mode == 2) { CreateCube(new Vector3(xAsLenght, yAsLenght, zAsLenght)); }
-            if (mode == 3) { CreateCircle(); }
-            if (mode == 4) { CreateHexagon(new Vector3(xAsLenght,0,zAsLenght)); }
+            if (mode == 0) { CreateCube(new Vector3(xAsLenght, yAsLenght, zAsLenght)); }
+            if (mode == 1) { CreateCircle(); }
+            if (mode == 2) { CreateHexagon(new Vector3(hexLengthX,0,hexLengthZ)); }
 
             SetParent();
+            SetRotation();
+            SetRotationObj();
         }
 
         if (GUILayout.Button("Destroy"))
@@ -110,18 +138,20 @@ public class Tool_Grid : EditorWindow
     void CreateCube(Vector3 dimentsions)
     {
         Vector3 objPos = obj.transform.position;
+        if(adv_Center)
+        {
+            objPos.x -= dimentsions.x * 0.5f;
+            objPos.y -= dimentsions.y * 0.5f;
+            objPos.z -= dimentsions.z * 0.5f;
+        }
 
         for (int xas = 0; xas < dimentsions.x; xas++)
         {
-            GameObject gridObjXas= Instantiate(prefabObj, new Vector3(objPos.x + distant * xas, objPos.y, objPos.z), Quaternion.identity);
-            prefabObjSave.Add(gridObjXas);
-
             for (int zas = 0; zas < dimentsions.z; zas++)
             {
                 GameObject gridObjZas = Instantiate(prefabObj, new Vector3(objPos.x + distant * xas, objPos.y, objPos.z + distant * zas), Quaternion.identity);
                 prefabObjSave.Add(gridObjZas);
-
-                for (int yas = 0; yas < dimentsions.y; yas++)
+                for (int yas = 1; yas < dimentsions.y; yas++)
                 {
                     GameObject gridObjYas = Instantiate(prefabObj, new Vector3(objPos.x + distant * xas, objPos.y + distant * yas, objPos.z + distant * zas), Quaternion.identity);
                     prefabObjSave.Add(gridObjYas);
@@ -133,6 +163,16 @@ public class Tool_Grid : EditorWindow
     void CreateHexagon(Vector3 dimentsions)
     {
         Vector3 objPos = obj.transform.position;
+        if (adv_Center && !adv_Invert)
+        {
+            objPos.x -= dimentsions.x * 0.5f * 1.7321f * hexSize;
+            objPos.z -= dimentsions.z * 0.5f * -1.5f * hexSize;
+        }
+        if (adv_Center && adv_Invert)
+        {
+            objPos.x -= dimentsions.x * 0.5f * 1.7321f * hexSize;
+            objPos.z += dimentsions.z * 0.5f * -1.5f * hexSize;
+        }
 
         for (int xas = 0; xas < dimentsions.x; xas++)
         {
@@ -148,7 +188,14 @@ public class Tool_Grid : EditorWindow
                 {
                     offset = 0;
                 }
-                CreateHax(new Vector3(objPos.x + 1.7321f * hexSize * xas - offset, objPos.y, objPos.z + -1.5f * hexSize * zas));
+                if (!adv_Invert)
+                {
+                    CreateHax(new Vector3(objPos.x + 1.7321f * hexSize * xas - offset, objPos.y, objPos.z + -1.5f * hexSize * zas));
+                }
+                else
+                {
+                    CreateHax(new Vector3(objPos.x + 1.7321f * hexSize * xas - offset, objPos.y, objPos.z + +1.5f * hexSize * zas));
+                }
             }
         }
     }
@@ -222,6 +269,19 @@ public class Tool_Grid : EditorWindow
         for (int i = 0; i < prefabObjSave.Count; i++)
         {
             prefabObjSave[i].transform.parent = obj.transform;
+        }
+    }
+
+    void SetRotation()
+    {
+        obj.transform.eulerAngles = adv_Rotation;
+    }
+
+    void SetRotationObj()
+    {
+        for (int i = 0; i < prefabObjSave.Count; i++)
+        {
+            prefabObjSave[i].transform.eulerAngles = adv_RotationObj;
         }
     }
 }

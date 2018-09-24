@@ -16,7 +16,7 @@ public class Tool_Scripts : EditorWindow
     private string searchAlgorithms = "";
     private string searchScriptTag = "";
 
-    private int selectedTab = 3;
+    private int selectedTab = 0;
     private int selectedTabQuikStart;
     private int selectedTabType3D;
     private int selectedTabType2D;
