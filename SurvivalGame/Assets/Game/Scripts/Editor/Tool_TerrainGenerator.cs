@@ -15,7 +15,14 @@ public class Tool_TerrainGenerator : EditorWindow
 
     private int terrainTab;
 
+    //Settings
+    private string terrainName;
     private Vector3 terrainSize;
+
+    //Generate
+    private float gen_Height;
+    private float gen_Mountains;
+    private float gen_Detail;
 
     [MenuItem("Tools/Terrain")]
     static void Init()
@@ -50,20 +57,28 @@ public class Tool_TerrainGenerator : EditorWindow
             if(terrainTab == 1)
             {
                 GUILayout.Label("Generate");
+
+
+                terrainSize.x = EditorGUILayout.FloatField("Size X: ", terrainSize.x);
+                terrainSize.z = EditorGUILayout.FloatField("Size Z: ", terrainSize.z);
+
+                gen_Height = EditorGUILayout.FloatField("Height: ", gen_Height);
+
+                gen_Mountains = EditorGUILayout.Slider("Mountains", gen_Mountains, 0, 100);
+                gen_Detail = EditorGUILayout.Slider("Detail",gen_Detail, 0, 100);
+
+                if (GUILayout.Button("Generate"))
+                {
+                    Generator();
+                }
             }
             if(terrainTab == 2)
             {
                 GUILayout.Label("Draw");
             }
-
         }
         GUILayout.EndVertical();
     }
-
-	void Start () 
-    {
-		
-	}
 
     void Update()
     {
@@ -94,6 +109,21 @@ public class Tool_TerrainGenerator : EditorWindow
     void GetInfo()
     {
         terrainSize = terrain.terrainData.size;
+    }
+
+    void Generator()
+    {
+        TerrainData terrainData = new TerrainData();
+
+        terrainData.size = new Vector3(terrainSize.x * 0.1f, gen_Height, terrainSize.z * 0.1f);
+        terrainData.heightmapResolution = 512;
+        terrainData.baseMapResolution = 1024;
+        terrainData.SetDetailResolution(1024, 10);
+
+        int _heightmapWidth = terrainData.heightmapWidth;
+        int _heightmapHeight = terrainData.heightmapHeight;
+
+        terrain.terrainData = terrainData;
     }
 
     void OnDrawGizmos()

@@ -85,7 +85,7 @@ public class Tool_Grid : EditorWindow
         {
             adv_Center = EditorGUILayout.Toggle("Center", adv_Center);
         }
-        if(mode == 2)
+        if (mode == 2)
         {
             adv_Invert = EditorGUILayout.Toggle("Invert: ", adv_Invert);
         }
