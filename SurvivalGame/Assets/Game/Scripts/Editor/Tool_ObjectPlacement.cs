@@ -5,12 +5,12 @@ using UnityEditor;
 using UnityEditorInternal;
 using System.IO;
 
-//[ExecuteInEditMode]
+
 public class Tool_ObjectPlacement : EditorWindow
 {
     private GameObject[] prefabs = new GameObject[0];
     private string[] search_results = new string[0];
-    private int selectedID = 999999;
+    private int selectedID = 99999999;
     private int collomLength = 4;
 
     private Texture2D[] prefabImg = new Texture2D[0];
@@ -40,7 +40,7 @@ public class Tool_ObjectPlacement : EditorWindow
                 content.image = prefabImg[i];
                 if (GUI.Button(new Rect(x * 100, y * 100, 100, 100), content))
                 {
-                    if (selectedID == i) { selectedID = 9999; } else { selectedID = i; }
+                    if (selectedID == i) { selectedID = 99999999; } else { selectedID = i; }
                 }
                 x++;
                 if (x == collomLength)
@@ -62,33 +62,49 @@ public class Tool_ObjectPlacement : EditorWindow
             FixPreview();
         }
         GUILayout.EndVertical();
-
-        if (Event.current.type == EventType.MouseUp && Event.current.button == 0)
-        {
-            Debug.Log("Left-Mouse Up");
-        }
     }
 
-    void Update()
+    void OnEnable()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            Debug.Log("Test");
-        }
+        SceneView.onSceneGUIDelegate += this.OnSceneGUI;
     }
 
-    void OnSceneGUI()
+    void OnDisable()
     {
-        if (Event.current.type == EventType.MouseUp && Event.current.button == 0)
+        SceneView.onSceneGUIDelegate -= this.OnSceneGUI;
+    }
+
+    void OnSceneGUI(SceneView sceneView)
+    {
+        Debug.Log("OnSceneGUI");
+        Ray worldRay = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+        RaycastHit hitInfo;
+
+        if (Physics.Raycast(worldRay, out hitInfo))
         {
-            Debug.Log("tst");
-            //anchorTool myTarget = (anchorTool)target;
+            if (selectedID != 99999999)
+            {
+                if (Event.current.type == EventType.Layout)
+                {
+                    HandleUtility.AddDefaultControl(0);
+                }
+
+                if (Event.current.shift)
+                {
+                    CreatePrefab(hitInfo.point);
+                }
+
+                if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
+                {
+                    CreatePrefab(hitInfo.point);
+                }
+            }
         }
     }
 
     void LoadPrefabs()
     {
-        search_results = System.IO.Directory.GetFiles("Assets/Game/Prefabs/", "*.prefab", System.IO.SearchOption.AllDirectories);
+        search_results = System.IO.Directory.GetFiles("Assets/Game/Prefabs/", "*.pref?b", System.IO.SearchOption.AllDirectories);
         prefabs = new GameObject[search_results.Length];
         prefabImg = new Texture2D[search_results.Length];
 
@@ -104,7 +120,7 @@ public class Tool_ObjectPlacement : EditorWindow
 
     void FixPreview()
     {
-        search_results = System.IO.Directory.GetFiles("Assets/Game/Prefabs/", "*.prefab", System.IO.SearchOption.AllDirectories);
+        search_results = System.IO.Directory.GetFiles("Assets/Game/Prefabs/", "*.pref?b", System.IO.SearchOption.AllDirectories);
 
         for (int i = 0; i < search_results.Length; i++)
         {
@@ -116,11 +132,10 @@ public class Tool_ObjectPlacement : EditorWindow
         }
     }
 
-    void CreatePrefab(int prefabID)
+    void CreatePrefab(Vector3 createPos)
     {
 
-        Instantiate(prefabs[prefabID], new Vector3(0,0,0), Quaternion.identity);
+        Instantiate(prefabs[selectedID], createPos, Quaternion.identity);
     }
 }
-
-
+ 

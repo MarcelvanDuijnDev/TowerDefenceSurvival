@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor.SceneManagement;
 using UnityEditor;
 using UnityEditorInternal;
 
 public class Tool_Layers : EditorWindow 
 {
+    private int[] layerSceneIndex = new int[0];
     public Tool_LayerOptions[] layers = new Tool_LayerOptions[0];
     private Tool_LayerOptions[] backupLayers;
     private GameObject[] selectedGameObjects;
@@ -86,6 +88,8 @@ public class Tool_Layers : EditorWindow
         GUILayout.Label("Layers", EditorStyles.boldLabel);
         GUILayout.BeginVertical("Box");
 
+        
+
         if (GUILayout.Button("Add Layer"))
         {
             backupLayers = layers;
@@ -99,6 +103,7 @@ public class Tool_Layers : EditorWindow
                 else
                 {
                     AddObjects(i);
+                    layers[i].sceneID = EditorSceneManager.GetActiveScene().buildIndex;
                     layers[i].layerName = "New Layer";
                 }
             }
@@ -115,40 +120,49 @@ public class Tool_Layers : EditorWindow
         GUILayout.EndVertical();
         for (int i = 0; i < layers.Length; i++)
         {
-            GUILayout.BeginHorizontal("Box");
-            layers[i].layerName = EditorGUILayout.TextField("",layers[i].layerName);
+            if (layers[i].sceneID == EditorSceneManager.GetActiveScene().buildIndex)
+            {
+                GUILayout.BeginHorizontal("Box");
+                layers[i].layerName = EditorGUILayout.TextField("", layers[i].layerName);
 
-            if (layers[i].active)
-            {
-                GUI.contentColor = Color.grey;
-            }
-            if (GUILayout.Button("Visable"))
-            {
-                LayerVisable(i);
-            }
-            GUI.contentColor = Color.white;
+                if (layers[i].active)
+                {
+                    GUI.contentColor = Color.grey;
+                }
+                if (GUILayout.Button("Visable"))
+                {
+                    LayerVisable(i);
+                }
+                GUI.contentColor = Color.white;
 
 
-            if (GUILayout.Button("Select"))
-            {
-                SelectObjects(i);
+                if (GUILayout.Button("Select"))
+                {
+                    SelectObjects(i);
+                }
+                if (GUILayout.Button("Change"))
+                {
+                    AddObjects(i);
+                }
+                if (GUILayout.Button("Delete"))
+                {
+                    RemoveLayer(i);
+                }
+                GUILayout.Label("Obj: " + layers[i].objects.Length.ToString(), EditorStyles.boldLabel);
+                GUILayout.EndHorizontal();
             }
-            if (GUILayout.Button("Change"))
-            {
-                AddObjects(i);
-            }
-            if (GUILayout.Button("Delete"))
-            {
-                RemoveLayer(i);
-            }
-            GUILayout.Label("Obj: " + layers[i].objects.Length.ToString(), EditorStyles.boldLabel);
-            GUILayout.EndHorizontal();
         }
+    }
+
+    private void SaveLayers()
+    {
+
     }
 }
     
 public struct Tool_LayerOptions
 {
+    public int sceneID;
     public string layerName;
     public bool active;
     public GameObject[] objects;
