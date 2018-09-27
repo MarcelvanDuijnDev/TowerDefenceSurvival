@@ -82,21 +82,24 @@ public class Tool_ObjectPlacement : EditorWindow
 
         if (Physics.Raycast(worldRay, out hitInfo))
         {
-            if (selectedID != 99999999)
+            if (!Event.current.alt)
             {
-                if (Event.current.type == EventType.Layout)
+                if (selectedID != 99999999)
                 {
-                    HandleUtility.AddDefaultControl(0);
-                }
+                    if (Event.current.type == EventType.Layout)
+                    {
+                        HandleUtility.AddDefaultControl(0);
+                    }
 
-                if (Event.current.shift)
-                {
-                    CreatePrefab(hitInfo.point);
-                }
+                    if (Event.current.shift)
+                    {
+                        CreatePrefab(hitInfo.point);
+                    }
 
-                if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
-                {
-                    CreatePrefab(hitInfo.point);
+                    if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
+                    {
+                        CreatePrefab(hitInfo.point);
+                    }
                 }
             }
         }
