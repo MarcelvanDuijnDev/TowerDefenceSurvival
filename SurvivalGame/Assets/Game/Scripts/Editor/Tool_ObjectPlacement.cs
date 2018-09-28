@@ -13,7 +13,11 @@ public class Tool_ObjectPlacement : EditorWindow
     private int selectedID = 99999999;
     private int collomLength = 4;
 
+    private int placementOption = 0;
+    private int createOptions = 0;
+
     private Texture2D[] prefabImg = new Texture2D[0];
+    private GameObject parentObject;
 
     [MenuItem("Tools/Object Placement")]
     static void Init()
@@ -28,9 +32,9 @@ public class Tool_ObjectPlacement : EditorWindow
         GUILayout.BeginVertical("Box");
         collomLength = EditorGUILayout.IntField("Collom Length", collomLength);
         GUILayout.BeginVertical("Box");
-        GUILayout.BeginScrollView(new Vector2(2,2));
         int x = 0;
         int y = 0;
+        GUILayout.BeginScrollView(new Vector2(2,2));
         for (int i = 0; i < search_results.Length; i++)
         {
             if (prefabs[i] != null)
@@ -52,6 +56,14 @@ public class Tool_ObjectPlacement : EditorWindow
             }
         }
         GUILayout.EndScrollView();
+        GUILayout.EndVertical();
+        GUILayout.BeginVertical("Box");
+        placementOption = GUILayout.Toolbar(placementOption, new string[] { "Click", "Paint"});
+        createOptions = GUILayout.Toolbar(createOptions, new string[] { "Free", "Parent" });
+        if(createOptions == 1)
+        {
+            parentObject = (GameObject)EditorGUILayout.ObjectField("Parent Object: ", parentObject, typeof(GameObject), true);
+        }
         GUILayout.EndVertical();
         if (GUILayout.Button("Search for prefabs"))
         {
@@ -76,7 +88,6 @@ public class Tool_ObjectPlacement : EditorWindow
 
     void OnSceneGUI(SceneView sceneView)
     {
-        Debug.Log("OnSceneGUI");
         Ray worldRay = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
         RaycastHit hitInfo;
 
@@ -107,7 +118,7 @@ public class Tool_ObjectPlacement : EditorWindow
 
     void LoadPrefabs()
     {
-        search_results = System.IO.Directory.GetFiles("Assets/Game/Prefabs/", "*.pref?b", System.IO.SearchOption.AllDirectories);
+        search_results = System.IO.Directory.GetFiles("Assets/", "*.pref?b", System.IO.SearchOption.AllDirectories);
         prefabs = new GameObject[search_results.Length];
         prefabImg = new Texture2D[search_results.Length];
 
@@ -123,7 +134,7 @@ public class Tool_ObjectPlacement : EditorWindow
 
     void FixPreview()
     {
-        search_results = System.IO.Directory.GetFiles("Assets/Game/Prefabs/", "*.pref?b", System.IO.SearchOption.AllDirectories);
+        search_results = System.IO.Directory.GetFiles("Assets/", "*.pref?b", System.IO.SearchOption.AllDirectories);
 
         for (int i = 0; i < search_results.Length; i++)
         {
@@ -137,8 +148,11 @@ public class Tool_ObjectPlacement : EditorWindow
 
     void CreatePrefab(Vector3 createPos)
     {
-
-        Instantiate(prefabs[selectedID], createPos, Quaternion.identity);
+        GameObject createdObj = Instantiate(prefabs[selectedID], createPos, Quaternion.identity);
+        if (createOptions == 1)
+        {
+            createdObj.transform.parent = parentObject.transform;
+        }
     }
 }
  
