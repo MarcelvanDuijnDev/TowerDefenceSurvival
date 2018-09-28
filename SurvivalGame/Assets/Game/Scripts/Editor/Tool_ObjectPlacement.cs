@@ -11,13 +11,15 @@ public class Tool_ObjectPlacement : EditorWindow
     private GameObject[] prefabs = new GameObject[0];
     private string[] search_results = new string[0];
     private int selectedID = 99999999;
-    private int collomLength = 4;
+    private float collomLength = 4;
 
     private int placementOption = 0;
     private int createOptions = 0;
 
     private Texture2D[] prefabImg = new Texture2D[0];
     private GameObject parentObject;
+
+    Vector2 scrollPos;
 
     [MenuItem("Tools/Object Placement")]
     static void Init()
@@ -30,11 +32,13 @@ public class Tool_ObjectPlacement : EditorWindow
     {
         Color defaultColor = GUI.backgroundColor;
         GUILayout.BeginVertical("Box");
-        collomLength = EditorGUILayout.IntField("Collom Length", collomLength);
         GUILayout.BeginVertical("Box");
+
+        collomLength = position.width / 100;
+
         int x = 0;
         int y = 0;
-        GUILayout.BeginScrollView(new Vector2(2,2));
+        scrollPos = GUILayout.BeginScrollView(scrollPos, GUILayout.Width(position.width - 20), GUILayout.Height(position.height - 150));
         for (int i = 0; i < search_results.Length; i++)
         {
             if (prefabs[i] != null)
@@ -47,7 +51,7 @@ public class Tool_ObjectPlacement : EditorWindow
                     if (selectedID == i) { selectedID = 99999999; } else { selectedID = i; }
                 }
                 x++;
-                if (x == collomLength)
+                if (x >= collomLength - 1)
                 {
                     y++;
                     x = 0;
@@ -55,6 +59,8 @@ public class Tool_ObjectPlacement : EditorWindow
                 GUI.backgroundColor = defaultColor;
             }
         }
+        GUILayout.Space(y * 100);
+
         GUILayout.EndScrollView();
         GUILayout.EndVertical();
         GUILayout.BeginVertical("Box");
