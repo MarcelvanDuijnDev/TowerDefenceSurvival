@@ -5,7 +5,6 @@ using UnityEditor;
 using UnityEditorInternal;
 using System.IO;
 
-
 public class Tool_ObjectPlacement : EditorWindow
 {
     private GameObject[] prefabs = new GameObject[0];
@@ -18,6 +17,9 @@ public class Tool_ObjectPlacement : EditorWindow
 
     private Texture2D[] prefabImg = new Texture2D[0];
     private GameObject parentObject;
+
+    private GameObject exampleObj;
+    private int checkSelectedID = 999999999;
 
     Vector2 scrollPos;
 
@@ -90,6 +92,7 @@ public class Tool_ObjectPlacement : EditorWindow
     void OnDisable()
     {
         SceneView.onSceneGUIDelegate -= this.OnSceneGUI;
+        DestroyImmediate(exampleObj);
     }
 
     void OnSceneGUI(SceneView sceneView)
@@ -99,6 +102,30 @@ public class Tool_ObjectPlacement : EditorWindow
 
         if (Physics.Raycast(worldRay, out hitInfo))
         {
+            if (selectedID <= prefabs.Length)
+            {
+                if (checkSelectedID != selectedID)
+                {
+                    DestroyImmediate(exampleObj);
+                    exampleObj = Instantiate(prefabs[selectedID], hitInfo.point, Quaternion.identity);
+                    exampleObj.layer = LayerMask.NameToLayer("Ignore Raycast");
+                    for (int i = 0; i < exampleObj.transform.childCount; i++)
+                    {
+                        exampleObj.transform.GetChild(i).gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+                        for (int o = 0; o < exampleObj.transform.GetChild(i).childCount; o++)
+                        {
+                            exampleObj.transform.GetChild(i).GetChild(o).gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+                        }
+                    }
+                    exampleObj.name = "Example Object";
+                    checkSelectedID = selectedID;
+                }
+            }
+            if (exampleObj != null)
+            {
+                exampleObj.transform.position = hitInfo.point;
+            }
+
             if (!Event.current.alt)
             {
                 if (selectedID != 99999999)
@@ -124,7 +151,7 @@ public class Tool_ObjectPlacement : EditorWindow
 
     void LoadPrefabs()
     {
-        search_results = System.IO.Directory.GetFiles("Assets/", "*.pref?b", System.IO.SearchOption.AllDirectories);
+        search_results = System.IO.Directory.GetFiles("Assets/", "*.prefab", System.IO.SearchOption.AllDirectories);
         prefabs = new GameObject[search_results.Length];
         prefabImg = new Texture2D[search_results.Length];
 
@@ -140,7 +167,7 @@ public class Tool_ObjectPlacement : EditorWindow
 
     void FixPreview()
     {
-        search_results = System.IO.Directory.GetFiles("Assets/", "*.pref?b", System.IO.SearchOption.AllDirectories);
+        search_results = System.IO.Directory.GetFiles("Assets/", "*.prefab", System.IO.SearchOption.AllDirectories);
 
         for (int i = 0; i < search_results.Length; i++)
         {
