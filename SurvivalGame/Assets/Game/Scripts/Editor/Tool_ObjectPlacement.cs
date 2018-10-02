@@ -21,7 +21,15 @@ public class Tool_ObjectPlacement : EditorWindow
     private GameObject exampleObj;
     private int checkSelectedID = 999999999;
 
-    Vector2 scrollPos;
+    private Vector2 scrollPos;
+
+    //Rotation
+    private float snapRot;
+    private bool randomRot;
+    private Vector3 rotation;
+    //Position
+    private float snapPos;
+    private Vector3 objPosition;
 
     [MenuItem("Tools/Object Placement")]
     static void Init()
@@ -50,7 +58,7 @@ public class Tool_ObjectPlacement : EditorWindow
                 content.image = prefabImg[i];
                 if (GUI.Button(new Rect(x * 100, y * 100, 100, 100), content))
                 {
-                    if (selectedID == i) { selectedID = 99999999; } else { selectedID = i; }
+                    if (selectedID == i) { selectedID = 99999999; DestroyImmediate(exampleObj); } else { selectedID = i; }
                 }
                 x++;
                 if (x >= collomLength - 1)
@@ -81,6 +89,12 @@ public class Tool_ObjectPlacement : EditorWindow
         {
             FixPreview();
         }
+        GUILayout.BeginVertical("Box");
+        snapPos = EditorGUILayout.FloatField("Snap Position: ", snapPos);
+        snapRot = EditorGUILayout.FloatField("Snap Rotation: ", snapRot);
+        GUILayout.Label("");
+        GUILayout.Space(10);
+        GUILayout.EndVertical();
         GUILayout.EndVertical();
     }
 
@@ -135,15 +149,17 @@ public class Tool_ObjectPlacement : EditorWindow
                         HandleUtility.AddDefaultControl(0);
                     }
 
-                    if (Event.current.shift)
-                    {
-                        CreatePrefab(hitInfo.point);
-                    }
+                    //if (Event.current.shift)
+                    //{
+                    //    CreatePrefab(hitInfo.point);
+                    //}
 
                     if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
                     {
                         CreatePrefab(hitInfo.point);
                     }
+
+                    
                 }
             }
         }
