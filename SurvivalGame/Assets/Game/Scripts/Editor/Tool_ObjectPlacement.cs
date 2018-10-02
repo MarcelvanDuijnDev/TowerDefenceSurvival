@@ -7,26 +7,37 @@ using System.IO;
 
 public class Tool_ObjectPlacement : EditorWindow
 {
+    //Prefab Array
     private GameObject[] prefabs = new GameObject[0];
     private string[] search_results = new string[0];
-    private int selectedID = 99999999;
-    private float collomLength = 4;
 
+    //Array Options
+    private string searchPrefab = "";
+    private bool hideNames = false;
+
+    //Array Selection
+    private float collomLength = 4;
+    private int selectedID = 99999999;
+    private int checkSelectedID = 999999999;
+
+    //Other
+    private Vector2 scrollPos1;
+    private Texture2D[] prefabImg = new Texture2D[0];
+
+    //Options
+    private int showOption = 0;
     private int placementOption = 0;
     private int createOptions = 0;
 
-    private Texture2D[] prefabImg = new Texture2D[0];
+    //Placement
     private GameObject parentObject;
-
     private GameObject exampleObj;
-    private int checkSelectedID = 999999999;
 
-    private Vector2 scrollPos;
-
+    //Placement Option
     private float paintSpeed = 1;
     private float timer1 = 0;
 
-    //Check Buttons
+    //Check Buttons Event
     private bool mouseDown;
     private bool mouseUp;
 
@@ -34,6 +45,7 @@ public class Tool_ObjectPlacement : EditorWindow
     private float snapRot;
     private bool randomRot = true;
     private Vector3 rotation;
+
     //Position
     private float snapPos;
     private Vector3 objPosition;
@@ -48,38 +60,79 @@ public class Tool_ObjectPlacement : EditorWindow
     void OnGUI()
     {
         Color defaultColor = GUI.backgroundColor;
-        GUILayout.BeginVertical("Box");
-        GUILayout.BeginVertical("Box");
 
-        collomLength = position.width / 100;
-
-        int x = 0;
-        int y = 0;
-        scrollPos = GUILayout.BeginScrollView(scrollPos, GUILayout.Width(position.width - 20), GUILayout.Height(position.height - 150));
-        for (int i = 0; i < search_results.Length; i++)
+        //Prefabs
+        GUILayout.BeginVertical("Box");
+        GUILayout.BeginHorizontal();
+        showOption = GUILayout.Toolbar(showOption, new string[] { "Icon", "Text" });
+        if (!hideNames)
         {
-            if (prefabs[i] != null)
+            if (GUILayout.Button("Hide Names", GUILayout.Width(100)))
             {
-                if (selectedID == i) { GUI.backgroundColor = new Color(0, 1, 0); } else { GUI.backgroundColor = new Color(1, 0, 0); }
-                GUIContent content = new GUIContent();
-                content.image = prefabImg[i];
-                if (GUI.Button(new Rect(x * 100, y * 100, 100, 100), content))
-                {
-                    if (selectedID == i) { selectedID = 99999999; DestroyImmediate(exampleObj); } else { selectedID = i; }
-                }
-                x++;
-                if (x >= collomLength - 1)
-                {
-                    y++;
-                    x = 0;
-                }
-                GUI.backgroundColor = defaultColor;
+                hideNames = true;
             }
         }
-        GUILayout.Space(y * 100);
-
+        else
+        {
+            if (GUILayout.Button("Show Names", GUILayout.Width(100)))
+            {
+                hideNames = false;
+            }
+        }
+        GUILayout.EndHorizontal();
+        searchPrefab = EditorGUILayout.TextField("Search: ", searchPrefab);
+        GUILayout.BeginVertical("Box");
+        collomLength = position.width / 100;
+        int x = 0;
+        int y = 0;
+        scrollPos1 = GUILayout.BeginScrollView(scrollPos1, GUILayout.Width(position.width - 20), GUILayout.Height(position.height - 300));
+        for (int i = 0; i < search_results.Length; i++)
+        {
+            if (prefabs[i] != null && prefabs[i].name.ToLower().Contains(searchPrefab.ToLower()))
+            {
+                if (showOption == 0)
+                {
+                    if (selectedID == i) { GUI.backgroundColor = new Color(0, 1, 0); } else { GUI.backgroundColor = new Color(1, 0, 0); }
+                    GUIContent content = new GUIContent();
+                    content.image = prefabImg[i];
+                    GUI.skin.button.imagePosition = ImagePosition.ImageAbove;
+                    if (!hideNames)
+                    {
+                        content.text = prefabs[i].name;
+                    }
+                    if (GUI.Button(new Rect(x * 100, y * 100, 100, 100), content))
+                    {
+                        if (selectedID == i) { selectedID = 99999999; DestroyImmediate(exampleObj); } else { selectedID = i; }
+                    }
+                    x++;
+                    if (x >= collomLength - 1)
+                    {
+                        y++;
+                        x = 0;
+                    }
+                    GUI.backgroundColor = defaultColor;
+                }
+                else
+                {
+                    if (selectedID == i) { GUI.backgroundColor = new Color(0, 1, 0); } else { GUI.backgroundColor = defaultColor; }
+                    if (GUILayout.Button(prefabs[i].name))
+                    {
+                        if (selectedID == i) { selectedID = 99999999; DestroyImmediate(exampleObj); } else { selectedID = i; }
+                    }
+                    GUI.backgroundColor = defaultColor;
+                }
+            }
+        }
+        if (showOption == 0)
+        {
+            GUILayout.Space(y * 100);
+        }
         GUILayout.EndScrollView();
         GUILayout.EndVertical();
+        GUILayout.EndVertical();
+
+        //Options
+        GUILayout.BeginVertical("Box");
         GUILayout.BeginVertical("Box");
         placementOption = GUILayout.Toolbar(placementOption, new string[] { "Click", "Paint"});
         if(placementOption == 1)
@@ -113,8 +166,6 @@ public class Tool_ObjectPlacement : EditorWindow
         GUILayout.BeginVertical("Box");
         snapPos = EditorGUILayout.FloatField("Snap Position: ", snapPos);
         snapRot = EditorGUILayout.FloatField("Snap Rotation: ", snapRot);
-        GUILayout.Label("");
-        GUILayout.Space(10);
         GUILayout.EndVertical();
         GUILayout.EndVertical();
     }
