@@ -23,9 +23,16 @@ public class Tool_ObjectPlacement : EditorWindow
 
     private Vector2 scrollPos;
 
+    private float paintSpeed = 1;
+    private float timer1 = 0;
+
+    //Check Buttons
+    private bool mouseDown;
+    private bool mouseUp;
+
     //Rotation
     private float snapRot;
-    private bool randomRot;
+    private bool randomRot = true;
     private Vector3 rotation;
     //Position
     private float snapPos;
@@ -75,10 +82,24 @@ public class Tool_ObjectPlacement : EditorWindow
         GUILayout.EndVertical();
         GUILayout.BeginVertical("Box");
         placementOption = GUILayout.Toolbar(placementOption, new string[] { "Click", "Paint"});
+        if(placementOption == 1)
+        {
+            paintSpeed = EditorGUILayout.FloatField("Paint Speed: ", paintSpeed);
+        }
         createOptions = GUILayout.Toolbar(createOptions, new string[] { "Free", "Parent" });
         if(createOptions == 1)
         {
             parentObject = (GameObject)EditorGUILayout.ObjectField("Parent Object: ", parentObject, typeof(GameObject), true);
+            if (GUILayout.Button("Clean Parent"))
+            {
+                int childAmount = parentObject.transform.childCount;
+                int childCalc = childAmount - 1;
+                for (int i = 0; i < childAmount; i++)
+                {
+                    DestroyImmediate(parentObject.transform.GetChild(childCalc).gameObject);
+                    childCalc -= 1;
+                }
+            }
         }
         GUILayout.EndVertical();
         if (GUILayout.Button("Search for prefabs"))
@@ -156,10 +177,35 @@ public class Tool_ObjectPlacement : EditorWindow
 
                     if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
                     {
-                        CreatePrefab(hitInfo.point);
+                        mouseDown = true;
+                    }
+                    if (Event.current.type == EventType.MouseUp && Event.current.button == 0)
+                    {
+                        mouseDown = false;
+                        mouseUp = true;
                     }
 
-                    
+
+                    if (placementOption == 0)
+                    {
+                        if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
+                        {
+                            CreatePrefab(hitInfo.point);
+                        }
+                    }
+                    else
+                    {
+                        float timer1Final = paintSpeed;
+                        if (mouseDown)
+                        {
+                            timer1 += 1 * Time.deltaTime;
+                            if (timer1 >= timer1Final)
+                            {
+                                CreatePrefab(hitInfo.point);
+                                timer1 = 0;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -201,6 +247,10 @@ public class Tool_ObjectPlacement : EditorWindow
         if (createOptions == 1)
         {
             createdObj.transform.parent = parentObject.transform;
+        }
+        if(randomRot)
+        {
+            createdObj.transform.rotation = Quaternion.EulerAngles(0,Random.Range(0,360),0);
         }
     }
 }
