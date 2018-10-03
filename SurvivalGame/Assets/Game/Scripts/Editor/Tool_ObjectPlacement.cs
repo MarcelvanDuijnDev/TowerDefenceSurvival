@@ -13,7 +13,7 @@ public class Tool_ObjectPlacement : EditorWindow
 
     //Array Options
     private string searchPrefab = "";
-    private bool hideNames = false;
+    private bool hideNames = true;
 
     //Array Selection
     private float collomLength = 4;
@@ -47,7 +47,7 @@ public class Tool_ObjectPlacement : EditorWindow
     private Vector3 rotation;
 
     //Position
-    private float snapPos;
+    private Vector3 snapPos;
     private Vector3 objPosition;
 
     [MenuItem("Tools/Object Placement")]
@@ -164,7 +164,7 @@ public class Tool_ObjectPlacement : EditorWindow
             FixPreview();
         }
         GUILayout.BeginVertical("Box");
-        snapPos = EditorGUILayout.FloatField("Snap Position: ", snapPos);
+        snapPos = EditorGUILayout.Vector3Field("Snap Position: ", snapPos);
         snapRot = EditorGUILayout.FloatField("Snap Rotation: ", snapRot);
         GUILayout.EndVertical();
         GUILayout.EndVertical();
@@ -209,6 +209,7 @@ public class Tool_ObjectPlacement : EditorWindow
             }
             if (exampleObj != null)
             {
+                objPosition = SnapTo(hitInfo.point, 45);
                 exampleObj.transform.position = hitInfo.point;
             }
 
@@ -260,6 +261,22 @@ public class Tool_ObjectPlacement : EditorWindow
                 }
             }
         }
+    }
+
+    Vector3 SnapTo(Vector3 v3, float snapAngle)
+    {
+        float angle = Vector3.Angle(v3, Vector3.up);
+        if (angle < snapAngle / 2.0f)
+            return Vector3.up * v3.magnitude;
+        if (angle > 180.0f - snapAngle / 2.0f)
+            return Vector3.down * v3.magnitude;
+
+        float t = Mathf.Round(angle / snapAngle);
+        float deltaAngle = (t * snapAngle) - angle;
+
+        Vector3 axis = Vector3.Cross(Vector3.up, v3);
+        Quaternion q = Quaternion.AngleAxis(deltaAngle, axis);
+        return q * v3;
     }
 
     void LoadPrefabs()
