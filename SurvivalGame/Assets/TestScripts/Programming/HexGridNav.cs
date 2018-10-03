@@ -71,69 +71,26 @@ public class HexGridNav : MonoBehaviour
         Debug.Log("GetPath");
 
         Vector2 currenTile = new Vector2(unitScript.tileX, unitScript.tileZ);
-        Vector2 currentTileCalc = new Vector2(unitScript.tileX, unitScript.tileZ);
         Vector2 finalDestenation = new Vector2(x, z);
 
-        int stepCount = 0;
         List<Vector2> steps = new List<Vector2>();
         Vector2 getNextStep = new Vector2(unitScript.tileX,unitScript.tileZ);
         List<Vector2> getTile = new List<Vector2>();
-        bool final = false;
 
-        while (!final)
+        for (int i = 0; i < 6; i++)
         {
-            //Right
-            if (finalDestenation.x > currenTile.x)
-            {
-                getNextStep.x += 1;
-            }
-            if (finalDestenation.x <= currenTile.x && finalDestenation.y > currenTile.y)
-            {
-                getNextStep.y += 1;
-            }
-            if (finalDestenation.x <= currenTile.x && finalDestenation.y < currenTile.y)
-            {
-                getNextStep.y -= 1;
-            }
-            //Left
-            if (finalDestenation.x < currenTile.x && finalDestenation.y > currenTile.y)
-            {
-                getNextStep.x -= 1;
-                getNextStep.y += 1;
-            }
-            if (finalDestenation.x < currenTile.x && finalDestenation.y < currenTile.y)
-            {
-                getNextStep.x -= 1;
-                getNextStep.y -= 1;
-            }
-            if (finalDestenation.x < currenTile.x)
-            {
-                getNextStep.x -= 1;
-            }
 
-            steps.Add(getNextStep);
-            currenTile = getNextStep;
-            currentTileCalc = getNextStep;
-            getTile.Add(currentTileCalc);
-            stepCount++;
-
-            if (currenTile == finalDestenation)
-            {
-                for (int i = 0; i < steps.Count; i++)
-                {
-                    Debug.Log(getTile[i]);
-                    for (int o = 0; o < hexType.Length; o++)
-                    {
-                        if (hexType[o].xas == getTile[i].x && hexType[o].zas == getTile[i].y)
-                        {
-                            Debug.Log("123");
-                            //hex[o].GetComponent<MeshRenderer>().enabled = false;
-                        }
-                    }
-                }
-                final = true;
-            }
         }
+
+
+        /* Left Bottom
+        -1 1
+        -1 0
+        -1 -1
+        0 -1
+        1 0
+        0 1
+        */
         stepsFinal = getTile;
     }
 
