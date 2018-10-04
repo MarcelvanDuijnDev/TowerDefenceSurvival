@@ -24,6 +24,8 @@ public class Tool_Scripts : EditorWindow
 
     private bool addScene = true, addScripts = true, addObject = true;
 
+    private Vector2 scrollPos;
+
     #region Scripts
     public string[] scriptName = new string[]
     {
@@ -124,6 +126,7 @@ public class Tool_Scripts : EditorWindow
 
             //Results
             GUILayout.BeginVertical("Box");
+            scrollPos = GUILayout.BeginScrollView(scrollPos, GUILayout.Width(position.width - 20), GUILayout.Height(position.height - 100));
             if (selectedTab == 0)
             {
                 for (int i = 0; i < scriptName.Length; i++)
@@ -187,6 +190,7 @@ public class Tool_Scripts : EditorWindow
                     }
                 }
             }
+            GUILayout.EndScrollView();
             GUILayout.EndVertical();
         }
 

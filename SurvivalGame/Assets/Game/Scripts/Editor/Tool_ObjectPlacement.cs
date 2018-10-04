@@ -214,6 +214,8 @@ public class Tool_ObjectPlacement : EditorWindow
 
 
                 exampleObj.transform.position = hitInfo.point;
+
+                
             }
 
             if (!Event.current.alt)
