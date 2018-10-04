@@ -166,6 +166,7 @@ public class Tool_ObjectPlacement : EditorWindow
         GUILayout.BeginVertical("Box");
         snapPos = EditorGUILayout.Vector3Field("Snap Position: ", snapPos);
         snapRot = EditorGUILayout.FloatField("Snap Rotation: ", snapRot);
+        randomRot = EditorGUILayout.Toggle("Random Rotation: ", randomRot);
         GUILayout.EndVertical();
         GUILayout.EndVertical();
     }
