@@ -125,7 +125,7 @@ public class Tool_ObjectPlacement : EditorWindow
         }
         if (showOption == 0)
         {
-            GUILayout.Space(y * 100);
+            GUILayout.Space(y * 100 + 100);
         }
         GUILayout.EndScrollView();
         GUILayout.EndVertical();
