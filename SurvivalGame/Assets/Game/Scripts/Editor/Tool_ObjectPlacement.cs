@@ -53,7 +53,8 @@ public class Tool_ObjectPlacement : EditorWindow
     [MenuItem("Tools/Object Placement")]
     static void Init()
     {
-        Tool_ObjectPlacement window = (Tool_ObjectPlacement)EditorWindow.GetWindow(typeof(Tool_ObjectPlacement));
+        Tool_ObjectPlacement window = CreateInstance<Tool_ObjectPlacement>();
+        window.title = "ObjectPlacement";
         window.Show();
     }
 
@@ -165,9 +166,16 @@ public class Tool_ObjectPlacement : EditorWindow
         }
         GUILayout.BeginVertical("Box");
         snapPos = EditorGUILayout.Vector3Field("Snap Position: ", snapPos);
+        rotation = EditorGUILayout.Vector3Field("Rotation ", rotation);
         snapRot = EditorGUILayout.FloatField("Snap Rotation: ", snapRot);
         randomRot = EditorGUILayout.Toggle("Random Rotation: ", randomRot);
         GUILayout.EndVertical();
+        if (GUILayout.Button("Extra Window"))
+        {
+            Tool_ObjectPlacement windowExtra = CreateInstance<Tool_ObjectPlacement>();
+            windowExtra.title = "Tool_ObjectPlacementExtra";
+            windowExtra.Show();
+        }
         GUILayout.EndVertical();
     }
 
@@ -214,8 +222,9 @@ public class Tool_ObjectPlacement : EditorWindow
 
 
                 exampleObj.transform.position = hitInfo.point;
+                exampleObj.transform.rotation = Quaternion.EulerRotation(rotation.x, rotation.y, rotation.z);
 
-                
+
             }
 
             if (!Event.current.alt)
@@ -226,11 +235,6 @@ public class Tool_ObjectPlacement : EditorWindow
                     {
                         HandleUtility.AddDefaultControl(0);
                     }
-
-                    //if (Event.current.shift)
-                    //{
-                    //    CreatePrefab(hitInfo.point);
-                    //}
 
                     if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
                     {
@@ -266,7 +270,11 @@ public class Tool_ObjectPlacement : EditorWindow
                 }
             }
         }
-    }
+
+        // Settings On Screen
+        if (GUI.Button(new Rect(10, 70, 50, 30), "Click"))
+            Debug.Log("Clicked the button with text");
+}
 
     void LoadPrefabs()
     {
