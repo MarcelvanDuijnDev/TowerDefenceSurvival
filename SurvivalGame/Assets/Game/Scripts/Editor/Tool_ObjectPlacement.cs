@@ -14,6 +14,7 @@ public class Tool_ObjectPlacement : EditorWindow
     //Array Options
     private string searchPrefab = "";
     private bool hideNames = true;
+    private float imageSize = 1;
 
     //Array Selection
     private float collomLength = 4;
@@ -66,6 +67,7 @@ public class Tool_ObjectPlacement : EditorWindow
         GUILayout.BeginVertical("Box");
         GUILayout.BeginHorizontal();
         showOption = GUILayout.Toolbar(showOption, new string[] { "Icon", "Text" });
+        imageSize = EditorGUILayout.Slider(imageSize, 0.25f, 2);
         if (!hideNames)
         {
             if (GUILayout.Button("Hide Names", GUILayout.Width(100)))
@@ -83,7 +85,8 @@ public class Tool_ObjectPlacement : EditorWindow
         GUILayout.EndHorizontal();
         searchPrefab = EditorGUILayout.TextField("Search: ", searchPrefab);
         GUILayout.BeginVertical("Box");
-        collomLength = position.width / 100;
+        float calcWidth = 100 * imageSize;
+        collomLength = position.width / calcWidth;
         int x = 0;
         int y = 0;
         scrollPos1 = GUILayout.BeginScrollView(scrollPos1, GUILayout.Width(position.width - 20), GUILayout.Height(position.height - 300));
@@ -101,7 +104,7 @@ public class Tool_ObjectPlacement : EditorWindow
                     {
                         content.text = prefabs[i].name;
                     }
-                    if (GUI.Button(new Rect(x * 100, y * 100, 100, 100), content))
+                    if (GUI.Button(new Rect(x * 100 * imageSize, y * 100 * imageSize, 100 * imageSize, 100 * imageSize), content))
                     {
                         if (selectedID == i) { selectedID = 99999999; DestroyImmediate(exampleObj); } else { selectedID = i; }
                     }
@@ -126,7 +129,7 @@ public class Tool_ObjectPlacement : EditorWindow
         }
         if (showOption == 0)
         {
-            GUILayout.Space(y * 100 + 100);
+            GUILayout.Space(y * 100 * imageSize + 100);
         }
         GUILayout.EndScrollView();
         GUILayout.EndVertical();
