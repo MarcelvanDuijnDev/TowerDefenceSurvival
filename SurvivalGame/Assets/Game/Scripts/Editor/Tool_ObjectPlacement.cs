@@ -222,12 +222,8 @@ public class Tool_ObjectPlacement : EditorWindow
             if (exampleObj != null)
             {
                 //objPosition = hitInfo.point;
-
-
                 exampleObj.transform.position = hitInfo.point;
                 exampleObj.transform.rotation = Quaternion.EulerRotation(rotation.x, rotation.y, rotation.z);
-
-
             }
 
             if (!Event.current.alt)
@@ -272,12 +268,26 @@ public class Tool_ObjectPlacement : EditorWindow
                     }
                 }
             }
+
+            // Draw grid
+            for (int yas = 0; yas < 3; yas++)
+            {
+                Handles.color = new Color(0,1,0);
+                for (int hor = 0; hor < 3; hor++)
+                {
+                    Handles.DrawLine(new Vector3(hitInfo.point.x - 10, hitInfo.point.y - 1 + 1 * yas, hitInfo.point.z - 1 + 1 * hor), new Vector3(hitInfo.point.x + 10, hitInfo.point.y - 1 + 1 * yas, hitInfo.point.z - 1 + 1 * hor));
+                }
+                for (int ver = 0; ver < 3; ver++)
+                {
+                    Handles.DrawLine(new Vector3(hitInfo.point.x - 1 + 1 * ver, hitInfo.point.y - 1 + 1 * yas, hitInfo.point.z - 10), new Vector3(hitInfo.point.x - 1 + 1 * ver, hitInfo.point.y - 1 + 1 * yas, hitInfo.point.z + 10));
+                }
+            }
         }
 
         // Settings On Screen
         if (GUI.Button(new Rect(10, 70, 50, 30), "Click"))
             Debug.Log("Clicked the button with text");
-}
+    }
 
     void LoadPrefabs()
     {
