@@ -48,6 +48,7 @@ public class Tool_ObjectPlacement : EditorWindow
     private Vector3 rotation;
 
     //Position
+    private Vector3 mousePos;
     private Vector3 snapPos;
     private Vector3 objPosition;
 
@@ -63,6 +64,7 @@ public class Tool_ObjectPlacement : EditorWindow
     {
         Color defaultColor = GUI.backgroundColor;
 
+        #region List Prefabs
         //Prefabs
         GUILayout.BeginVertical("Box");
         GUILayout.BeginHorizontal();
@@ -134,7 +136,9 @@ public class Tool_ObjectPlacement : EditorWindow
         GUILayout.EndScrollView();
         GUILayout.EndVertical();
         GUILayout.EndVertical();
+        #endregion
 
+        #region Options
         //Options
         GUILayout.BeginVertical("Box");
         GUILayout.BeginVertical("Box");
@@ -173,13 +177,8 @@ public class Tool_ObjectPlacement : EditorWindow
         snapRot = EditorGUILayout.FloatField("Snap Rotation: ", snapRot);
         randomRot = EditorGUILayout.Toggle("Random Rotation: ", randomRot);
         GUILayout.EndVertical();
-        if (GUILayout.Button("Extra Window"))
-        {
-            Tool_ObjectPlacement windowExtra = CreateInstance<Tool_ObjectPlacement>();
-            windowExtra.title = "Tool_ObjectPlacementExtra";
-            windowExtra.Show();
-        }
         GUILayout.EndVertical();
+    #endregion
     }
 
     void OnEnable()
@@ -270,17 +269,26 @@ public class Tool_ObjectPlacement : EditorWindow
             }
 
             // Draw grid
-            for (int yas = 0; yas < 3; yas++)
+            /*
+            Handles.color = new Color(0, 1, 0);
+            for (int hor = 0; hor < 3; hor++)
             {
-                Handles.color = new Color(0,1,0);
-                for (int hor = 0; hor < 3; hor++)
-                {
-                    Handles.DrawLine(new Vector3(hitInfo.point.x - 10, hitInfo.point.y - 1 + 1 * yas, hitInfo.point.z - 1 + 1 * hor), new Vector3(hitInfo.point.x + 10, hitInfo.point.y - 1 + 1 * yas, hitInfo.point.z - 1 + 1 * hor));
-                }
-                for (int ver = 0; ver < 3; ver++)
-                {
-                    Handles.DrawLine(new Vector3(hitInfo.point.x - 1 + 1 * ver, hitInfo.point.y - 1 + 1 * yas, hitInfo.point.z - 10), new Vector3(hitInfo.point.x - 1 + 1 * ver, hitInfo.point.y - 1 + 1 * yas, hitInfo.point.z + 10));
-                }
+                Handles.DrawLine(new Vector3(hitInfo.point.x - 10, hitInfo.point.y, hitInfo.point.z - 1 + 1 * hor), new Vector3(hitInfo.point.x + 10, hitInfo.point.y, hitInfo.point.z - 1 + 1 * hor));
+            }
+            for (int ver = 0; ver < 3; ver++)
+            {
+                Handles.DrawLine(new Vector3(hitInfo.point.x - 1 + 1 * ver, hitInfo.point.y, hitInfo.point.z - 10), new Vector3(hitInfo.point.x - 1 + 1 * ver, hitInfo.point.y, hitInfo.point.z + 10));
+            }
+            */
+
+            // Draw obj location
+
+            if (selectedID != 99999999)
+            {
+                Handles.color = new Color(1, 0, 0);
+                Handles.DrawLine(new Vector3(hitInfo.point.x - 0.1f, hitInfo.point.y, hitInfo.point.z), new Vector3(hitInfo.point.x + 0.1f, hitInfo.point.y, hitInfo.point.z));
+                Handles.DrawLine(new Vector3(hitInfo.point.x, hitInfo.point.y, hitInfo.point.z - 0.1f), new Vector3(hitInfo.point.x, hitInfo.point.y, hitInfo.point.z + 0.1f));
+                Handles.DrawSphere(1,hitInfo.point, Quaternion.identity,0.05f);
             }
         }
 
