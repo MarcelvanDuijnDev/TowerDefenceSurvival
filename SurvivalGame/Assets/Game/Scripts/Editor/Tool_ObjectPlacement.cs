@@ -359,7 +359,7 @@ public class Tool_ObjectPlacement : EditorWindow
         if (showOptionsOnScreen)
         {
             GUI.Box(new Rect(0, 0, Screen.width, 22), GUIContent.none);
-            OnscreenSelectedID = GUI.Toolbar(new Rect(22, 1, Screen.width / 3 - 30, 20), OnscreenSelectedID, new string[] { "Settings", "Paint", "Transform", "Snap" });
+            OnscreenSelectedID = GUI.Toolbar(new Rect(22, 1, Screen.width / 3 - 30, 20), OnscreenSelectedID, new string[] { "Settings", "Placement", "Transform", "Snap" });
             if(OnscreenSelectedID == 0)
             {
                 //parentObject = (GameObject)EditorGUILayout.ObjectField("Parent Object: ", parentObject, typeof(GameObject), true);
