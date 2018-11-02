@@ -26,9 +26,9 @@ public class Tool_ObjectPlacement : EditorWindow
     private Texture2D[] prefabImg = new Texture2D[0];
 
     //Options
+    private bool windowHideOptions = true;
     private int showOption = 0;
     private int placementOption = 0;
-    private int createOptions = 0;
 
     //Placement
     private GameObject parentObject;
@@ -51,6 +51,10 @@ public class Tool_ObjectPlacement : EditorWindow
     private Vector3 mousePos;
     private Vector3 snapPos;
     private Vector3 objPosition;
+
+    //Onscene Options
+    private bool showOptionsOnScreen;
+    private int OnscreenSelectedID;
 
     [MenuItem("Tools/Object Placement")]
     static void Init()
@@ -91,7 +95,14 @@ public class Tool_ObjectPlacement : EditorWindow
         collomLength = position.width / calcWidth;
         int x = 0;
         int y = 0;
-        scrollPos1 = GUILayout.BeginScrollView(scrollPos1, GUILayout.Width(position.width - 20), GUILayout.Height(position.height - 300));
+        if (!windowHideOptions)
+        {
+            scrollPos1 = GUILayout.BeginScrollView(scrollPos1, GUILayout.Width(position.width - 20), GUILayout.Height(position.height - 300));
+        }
+        else
+        {
+            scrollPos1 = GUILayout.BeginScrollView(scrollPos1, GUILayout.Width(position.width - 20), GUILayout.Height(position.height - 90));
+        }
         for (int i = 0; i < search_results.Length; i++)
         {
             if (prefabs[i] != null && prefabs[i].name.ToLower().Contains(searchPrefab.ToLower()))
@@ -139,44 +150,59 @@ public class Tool_ObjectPlacement : EditorWindow
         #endregion
 
         #region Options
-        //Options
         GUILayout.BeginVertical("Box");
-        GUILayout.BeginVertical("Box");
-        placementOption = GUILayout.Toolbar(placementOption, new string[] { "Click", "Paint"});
-        if(placementOption == 1)
+        if (!windowHideOptions)
         {
-            paintSpeed = EditorGUILayout.FloatField("Paint Speed: ", paintSpeed);
-        }
-        createOptions = GUILayout.Toolbar(createOptions, new string[] { "Free", "Parent" });
-        if(createOptions == 1)
-        {
-            parentObject = (GameObject)EditorGUILayout.ObjectField("Parent Object: ", parentObject, typeof(GameObject), true);
-            if (GUILayout.Button("Clean Parent"))
+            GUILayout.BeginVertical("Box");
+            placementOption = GUILayout.Toolbar(placementOption, new string[] { "Click", "Paint" });
+            if (placementOption == 1)
             {
-                int childAmount = parentObject.transform.childCount;
-                int childCalc = childAmount - 1;
-                for (int i = 0; i < childAmount; i++)
+                paintSpeed = EditorGUILayout.FloatField("Paint Speed: ", paintSpeed);
+            }
+            parentObject = (GameObject)EditorGUILayout.ObjectField("Parent Object: ", parentObject, typeof(GameObject), true);
+            if (parentObject != null)
+            {
+                if (GUILayout.Button("Clean Parent"))
                 {
-                    DestroyImmediate(parentObject.transform.GetChild(childCalc).gameObject);
-                    childCalc -= 1;
+                    int childAmount = parentObject.transform.childCount;
+                    int childCalc = childAmount - 1;
+                    for (int i = 0; i < childAmount; i++)
+                    {
+                        DestroyImmediate(parentObject.transform.GetChild(childCalc).gameObject);
+                        childCalc -= 1;
+                    }
                 }
             }
+            GUILayout.EndVertical();
+            if (GUILayout.Button("Search for prefabs"))
+            {
+                LoadPrefabs();
+            }
+            if (GUILayout.Button("Fix prefabs"))
+            {
+                FixPreview();
+            }
+            GUILayout.BeginVertical("Box");
+            snapPos = EditorGUILayout.Vector3Field("Snap Position: ", snapPos);
+            rotation = EditorGUILayout.Vector3Field("Rotation ", rotation);
+            snapRot = EditorGUILayout.FloatField("Snap Rotation: ", snapRot);
+            randomRot = EditorGUILayout.Toggle("Random Rotation: ", randomRot);
+            GUILayout.EndVertical();
         }
-        GUILayout.EndVertical();
-        if (GUILayout.Button("Search for prefabs"))
+        if (windowHideOptions)
         {
-            LoadPrefabs();
+            if (GUILayout.Button("Show Options"))
+            {
+                windowHideOptions = false;
+            }
         }
-        if (GUILayout.Button("Fix prefabs"))
+        else
         {
-            FixPreview();
+            if (GUILayout.Button("Hide Options"))
+            {
+                windowHideOptions = true;
+            }
         }
-        GUILayout.BeginVertical("Box");
-        snapPos = EditorGUILayout.Vector3Field("Snap Position: ", snapPos);
-        rotation = EditorGUILayout.Vector3Field("Rotation ", rotation);
-        snapRot = EditorGUILayout.FloatField("Snap Rotation: ", snapRot);
-        randomRot = EditorGUILayout.Toggle("Random Rotation: ", randomRot);
-        GUILayout.EndVertical();
         GUILayout.EndVertical();
     #endregion
     }
@@ -184,11 +210,13 @@ public class Tool_ObjectPlacement : EditorWindow
     void OnEnable()
     {
         SceneView.onSceneGUIDelegate += this.OnSceneGUI;
+        SceneView.onSceneGUIDelegate += this.OnScene;
     }
 
     void OnDisable()
     {
         SceneView.onSceneGUIDelegate -= this.OnSceneGUI;
+        SceneView.onSceneGUIDelegate -= this.OnScene;
         DestroyImmediate(exampleObj);
     }
 
@@ -199,6 +227,8 @@ public class Tool_ObjectPlacement : EditorWindow
 
         if (Physics.Raycast(worldRay, out hitInfo))
         {
+            mousePos = hitInfo.point;
+
             if (selectedID <= prefabs.Length)
             {
                 if (checkSelectedID != selectedID)
@@ -291,10 +321,6 @@ public class Tool_ObjectPlacement : EditorWindow
                 Handles.DrawSphere(1,hitInfo.point, Quaternion.identity,0.05f);
             }
         }
-
-        // Settings On Screen
-        if (GUI.Button(new Rect(10, 70, 50, 30), "Click"))
-            Debug.Log("Clicked the button with text");
     }
 
     void LoadPrefabs()
@@ -327,10 +353,42 @@ public class Tool_ObjectPlacement : EditorWindow
         }
     }
 
+    void OnScene(SceneView sceneView)
+    {
+        Handles.BeginGUI();
+        if (showOptionsOnScreen)
+        {
+            GUI.Box(new Rect(0, 0, Screen.width, 22), GUIContent.none);
+            OnscreenSelectedID = GUI.Toolbar(new Rect(22, 1, Screen.width / 3 - 30, 20), OnscreenSelectedID, new string[] { "Settings", "Paint", "Transform", "Snap" });
+            if(OnscreenSelectedID == 0)
+            {
+                //parentObject = (GameObject)EditorGUILayout.ObjectField("Parent Object: ", parentObject, typeof(GameObject), true);
+                GUI.Label(new Rect(Screen.width / 3, 1, 200, 50), "Test");
+            }
+        }
+
+        GUI.color = new Color(1f, 1f, 1f, 1f);
+        if (!showOptionsOnScreen)
+        {
+            if (GUI.Button(new Rect(1, 1, 20, 20), "+"))
+            {
+                showOptionsOnScreen = true;
+            }
+        }
+        else
+        {
+            if (GUI.Button(new Rect(1, 1, 20, 20), "-"))
+            {
+                showOptionsOnScreen = false;
+            }
+        }
+        Handles.EndGUI();
+    }
+
     void CreatePrefab(Vector3 createPos)
     {
         GameObject createdObj = Instantiate(prefabs[selectedID], createPos, Quaternion.identity);
-        if (createOptions == 1)
+        if (parentObject != null)
         {
             createdObj.transform.parent = parentObject.transform;
         }
