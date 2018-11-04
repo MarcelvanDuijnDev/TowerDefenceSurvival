@@ -7,6 +7,7 @@ using System.IO;
 
 public class Tool_ObjectPlacement : EditorWindow
 {
+    #region Variables
     //Prefab Array
     private GameObject[] prefabs = new GameObject[0];
     private string[] search_results = new string[0];
@@ -55,6 +56,7 @@ public class Tool_ObjectPlacement : EditorWindow
     //Onscene Options
     private bool showOptionsOnScreen;
     private int OnscreenSelectedID;
+    #endregion
 
     [MenuItem("Tools/Object Placement")]
     static void Init()
@@ -359,25 +361,40 @@ public class Tool_ObjectPlacement : EditorWindow
         if (showOptionsOnScreen)
         {
             GUI.Box(new Rect(0, 0, Screen.width, 22), GUIContent.none);
-            OnscreenSelectedID = GUI.Toolbar(new Rect(22, 1, Screen.width / 3 - 30, 20), OnscreenSelectedID, new string[] { "Settings", "Placement", "Transform", "Snap" });
-            if(OnscreenSelectedID == 0)
+            OnscreenSelectedID = GUI.Toolbar(new Rect(22, 1, Screen.width / 2 - 30, 20), OnscreenSelectedID, new string[] { "Settings", "Placement", "Transform", "Snap" });
+            switch (OnscreenSelectedID)
             {
-                //parentObject = (GameObject)EditorGUILayout.ObjectField("Parent Object: ", parentObject, typeof(GameObject), true);
-                GUI.Label(new Rect(Screen.width / 3, 1, 200, 50), "Test");
+                case 0:
+                    //parentObject = (GameObject)EditorGUILayout.ObjectField("Parent Object: ", parentObject, typeof(GameObject), true);
+                    GUI.Label(new Rect(Screen.width / 2, 1, 200, 50), "Test");
+                    break;
+                case 1:
+                    if (GUI.Button(new Rect(Screen.width / 2, 1, 100, 20), "SetParent"))
+                    {
+                        Debug.Log("test");
+                    }
+                    GUI.Label(new Rect(Screen.width / 2 + 110, 1, 20, 20), "CurrentObjectName");
+                    break;
+                case 2:
+
+                    break;
+                case 3:
+
+                    break;
             }
         }
 
         GUI.color = new Color(1f, 1f, 1f, 1f);
         if (!showOptionsOnScreen)
         {
-            if (GUI.Button(new Rect(1, 1, 20, 20), "+"))
+            if (GUI.Button(new Rect(1, 1, 20, 20), " +"))
             {
                 showOptionsOnScreen = true;
             }
         }
         else
         {
-            if (GUI.Button(new Rect(1, 1, 20, 20), "-"))
+            if (GUI.Button(new Rect(1, 1, 20, 20), " -"))
             {
                 showOptionsOnScreen = false;
             }
