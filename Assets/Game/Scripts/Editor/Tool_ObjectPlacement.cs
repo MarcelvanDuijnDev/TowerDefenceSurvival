@@ -320,7 +320,7 @@ public class Tool_ObjectPlacement : EditorWindow
                 Handles.color = new Color(1, 0, 0);
                 Handles.DrawLine(new Vector3(hitInfo.point.x - 0.1f, hitInfo.point.y, hitInfo.point.z), new Vector3(hitInfo.point.x + 0.1f, hitInfo.point.y, hitInfo.point.z));
                 Handles.DrawLine(new Vector3(hitInfo.point.x, hitInfo.point.y, hitInfo.point.z - 0.1f), new Vector3(hitInfo.point.x, hitInfo.point.y, hitInfo.point.z + 0.1f));
-                Handles.DrawSphere(1,hitInfo.point, Quaternion.identity,0.05f);
+                //Handles.DrawSphere(1,hitInfo.point, Quaternion.identity,0.05f);
             }
         }
     }
