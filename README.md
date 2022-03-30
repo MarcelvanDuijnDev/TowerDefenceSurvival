@@ -1,9 +1,8 @@
 # TowerDefenceSurvival
 
 **This project** <br>
-A game based on the game: Getting over it.
-You are a cannon that needs to proceed trough the map by shooting.
+3D first person tower defence game. Protect the tower from the enemies by mining ores and placing turrets.
 
-**Project Created:** *(Nov-2018)* <br>
-**Project status:** *(Oct-2020)* <br>
-Updated the project from Unity version 2018.2.7f1 to 2020.1.8f1.
+[UnityBuild can be found here](https://github.com/MarcelvanDuijnDev/Unity_Builds)
+
+<img align="center" src="https://raw.githubusercontent.com/MarcelvanDuijnDev/Unity_Builds/main/OtherFiles/ScreenShot_TowerDefenceSurvival_1.png">
