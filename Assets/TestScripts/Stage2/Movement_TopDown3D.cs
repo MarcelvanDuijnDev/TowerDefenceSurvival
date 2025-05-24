@@ -28,7 +28,7 @@ public class Movement_TopDown3D : MonoBehaviour
         //Movement
         Vector3 moveInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
         if (Input.GetKey(KeyCode.LeftShift)) { m_Speed = m_SprintSpeed; } else { m_Speed = m_NormalSpeed; }
-        m_rb.velocity = moveInput * m_Speed;
+        m_rb.linearVelocity = moveInput * m_Speed;
 
         //Camera
         m_Camera.transform.position = new Vector3(m_Player.transform.position.x + m_OffSet.x, m_Player.transform.position.y + m_OffSet.y, m_Player.transform.position.z + m_OffSet.z);
